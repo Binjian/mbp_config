@@ -214,11 +214,11 @@
 ;;(when (package! org)
 ;;  package! ox-awesomecv)
 
-(package! elfeed)
-(package! elfeed-org)
-(package! elfeed-score)
+;;(package! elfeed)
+;;(package! elfeed-org)
+;;(package! elfeed-score)
 (package! org-ref)
 (package! org-roam-bibtex)
 
-(package! rka-academic
-  :recipe (:host nil :repo "https://gist.github.com/Binjian/123b7c2c1cf5f2ae6557ceda2f0efe04"))
+;;(package! rka-academic
+;;  :recipe (:host nil :repo "https://gist.github.com/Binjian/123b7c2c1cf5f2ae6557ceda2f0efe04"))

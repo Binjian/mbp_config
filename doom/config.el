@@ -858,26 +858,36 @@
   :load-path "straight/repos/org-cv/"
   :init (require 'ox-hugocv))
 
-(setq elfeed-feeds
-      '(("https://rss.arxiv.org/rss/cs.AI+cs.CV+cs.GL+cs.LG+cs.MA+cs.NE+cs.RO+cs.SC+eess.AS+eess.IV+eess.SY" arx ai)
-        ("https://rss.arxiv.org/rss/cs.AR+cs.CC+cs.CL+cs.DB+cs.DC+cs.DS+cs.PL+cs.SE+cs.SY" arx sys)
-        ("https://rss.arxiv.org/rss/cs" arx cs)
-        ("https://medium.com/tag/ai" medium ai)
-        ("https://feeds.maketecheasier.com/MakeTechEasier" tech news)
-        ("https://solar.lowtechmagazine.com/feeds/all-en.atom.xml" tech)
-        ("https://old.reddit.com/r/f1technical.rss" tech f1)))
+;;(setq elfeed-feeds
+;;      '(("https://rss.arxiv.org/rss/cs.AI+cs.CV+cs.GL+cs.LG+cs.MA+cs.NE+cs.RO+cs.SC+eess.AS+eess.IV+eess.SY" arx ai)
+;;        ("https://rss.arxiv.org/rss/cs.AR+cs.CC+cs.CL+cs.DB+cs.DC+cs.DS+cs.PL+cs.SE+cs.SY" arx sys)
+;;        ("https://rss.arxiv.org/rss/cs" arx cs)
+;;        ("https://medium.com/tag/ai" medium ai)
+;;        ("https://feeds.maketecheasier.com/MakeTechEasier" tech news)
+;;        ("https://solar.lowtechmagazine.com/feeds/all-en.atom.xml" tech)
+;;        ("https://old.reddit.com/r/f1technical.rss" tech f1)))
 
-(add-hook 'elfeed-new-entry-hook
-          (elfeed-make-tagger :feed-url "medium\\.com"
-                              :before "3 months ago"
-                              :add 'medium))
+(after! elfeed
+  (setq elfeed-search-filter "@3-month-ago +unread"))
 
-(defface elfeed-face-tag-ai
-  '((t :foreground "#f00"))
-  "This is a custom font face for the F1 tag in Elfeed.")
+;;(clrhash elfeed-search-filter)
+;;(add-hook 'elfeed-new-entry-hook
+;;          (elfeed-make-tagger :feed-url "medium\\.com"
+;;                              :before "3 months ago"
+;;                              :add 'medium))
 
-(push '(ai elfeed-face-tag-ai)
-      elfeed-search-face-alist)
+;;(defface elfeed-face-tag-ai
+;;  '((t :foreground "#f00"))
+;;  "This is a custom font face for the F1 tag in Elfeed.")
 
-(setq rmh-elfeed-org-files (list "~/.org.d/elfeed"))
+;;(push '(ai elfeed-face-tag-ai)
+;;     elfeed-search-face-alist)
+
+(setq rmh-elfeed-org-files (list "~/.org.d/elfeed/feeds.org"))
 (elfeed-org)
+(elfeed-goodies/setup)
+
+(after! citar
+  (setq! citar-bibliography '("~/.org.d/bib/references.bib"))
+  (setq! citar-library-paths '("~/Readings/02-papers/bib-lib"))
+  (setq! citar-notes-paths '("~/.org.d/bib/notes/")))

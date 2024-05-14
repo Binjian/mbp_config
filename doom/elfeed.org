@@ -1,0 +1,23 @@
+* root :elfeed:
+** Programming :programming:
+*** [[https://this-week-in-rust.org/rss.xml][This Week in Rust]] :rust:
+*** [[https://blog.python.org/feeds/posts/default?alt=rss][Python.iorg]] :python:
+** News :news:
+*** Top news :tops:
+**** [[http://feeds.bbci.co.uk/news/rss.xml][BBC news]]
+*** Tech news :tech:
+**** [[https://feeds.maketecheasier.com/MakeTechEasier][MakeTechEasier]]
+** Blogs :blog
+*** Medium :med:
+**** https://medium.com/tag/ai :ai:
+** Forum :forum:
+*** https://www.reddit.com/r/emacs.rss :emacs:
+*** https://www.reddit.com/r/deeplearning.rss :ai:
+*** https://www.reddit.com/r/reinforcementlearning.css :ai:
+** papers :lit:
+*** archive :arx:
+**** https://rss.arxiv.org/rss/cs.AI+cs.CV+cs.GL+cs.LG+cs.MA+cs.NE+cs.RO+cs.SC+eess.AS+eess.IV+eess.SY :ai:
+**** https://rss.arxiv.org/rss/cs.AR+cs.CC+cs.CL+cs.DB+cs.DC+cs.DS+cs.PL+cs.SE+cs.SY :sys:
+**** https://rss.arxiv.org/rss/cs :cs:
+*** ieee :ieee:
+**** [[https://ieeexplore.ieee.org/rss/TOC34.XML][PAMI]] :ai:
