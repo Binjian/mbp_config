@@ -77,6 +77,14 @@
 
 (setq persp-emacsclient-init-frame-behaviour-override "main")
 
+(setq tab-bar-tab-name-function 'buffer-name)
+(defun set-elisp-indentation-offset ()
+  "Set indentation offset for Emacs Lisp mode."
+  (setq-local tab-width 2)
+  (setq-local lisp-indent-offset 2)
+  (setq-local indent-line-function 'insert-tab))
+
+(add-hook 'emacs-lisp-mode-hook 'set-elisp-indentation-offset)
 ;; (use-package pyim
 ;;   :ensure nil
 ;;   :config
