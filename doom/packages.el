@@ -216,7 +216,8 @@
 
 ;;(package! elfeed)
 ;;(package! elfeed-org)
-;;(package! elfeed-score)
+
+(package! elfeed-score)
 (package! org-ref)
 (package! org-roam-bibtex)
 
