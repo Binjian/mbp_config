@@ -874,28 +874,70 @@
 ;;        ("https://feeds.maketecheasier.com/MakeTechEasier" tech news)
 ;;        ("https://solar.lowtechmagazine.com/feeds/all-en.atom.xml" tech)
 ;;        ("https://old.reddit.com/r/f1technical.rss" tech f1)))
+;;(setq reftex-default-bibliography "~/.org.d/bib/references.bib")
 
-(after! elfeed
-  (setq elfeed-search-filter "@3-month-ago +unread"))
+(setq rmh-elfeed-org-files (list "~/.org.d/elfeed/feeds.org"))
+;;(elfeed-org)
+;;(elfeed-goodies/setup)
+
+;;(use-package! elfeed-score
+;;  :after elfeed
+;;  :config
+;;  (elfeed-score-load-score-file "~/.config/doom/elfeed.score") ; See the elfeed-score documentation for the score file syntax
+;;  (setq elfeed-score-serde-score-file "~/.config.d/doom/elfeed.serde.score")
+;;  (elfeed-score-enable)
+;;  (define-key elfeed-search-mode-map "=" elfeed-score-map))
 
 ;;(clrhash elfeed-search-filter)
 ;;(add-hook 'elfeed-new-entry-hook
 ;;          (elfeed-make-tagger :feed-url "medium\\.com"
 ;;                              :before "3 months ago"
 ;;                              :add 'medium))
-
 ;;(defface elfeed-face-tag-ai
 ;;  '((t :foreground "#f00"))
 ;;  "This is a custom font face for the F1 tag in Elfeed.")
-
 ;;(push '(ai elfeed-face-tag-ai)
-;;     elfeed-search-face-alist)
+;;      elfeed-search-face-alist)
 
-(setq rmh-elfeed-org-files (list "~/.org.d/elfeed/feeds.org"))
-(elfeed-org)
-(elfeed-goodies/setup)
+;;(setq! bibtex-completion-bibliography '("~/.org.d/bib/references.bib"))
+;;(setq biblio-download-directory '("~/Readings/02-papers/bib-lib"))
 
-(after! citar
-  (setq! citar-bibliography '("~/.org.d/bib/references.bib"))
-  (setq! citar-library-paths '("~/Readings/02-papers/bib-lib"))
-  (setq! citar-notes-paths '("~/.org.d/bib/notes/")))
+;;(use-package! citar
+;;  :no-require
+;;  :custom
+
+;;(setq! citar-bibliography '("~/.org.d/bib/global.bib"
+;;                            "~/.org.d/bib/download.bib")
+;;       citar-library-paths '("~/Readings/02-papers/bib-lib")
+;;       citar-notes-paths '("~/.org.d/bib/notes/"))
+
+;;(use-package! citar
+;;  :custom
+;;  (citar-bibliography '("~/.org.d/bib/global.bib"))
+;;  :hook
+;;  (LaTeX-mode . citar-capf-setup)
+;;  (org-mode . citar-capf-setup))
+
+;;org-cite-insert-processor 'citar)
+;;org-cite-follow-processor 'citar)
+;;org-cite-activate-processor 'citar)
+;;(org-cite-global-bibliography '("~/.org.d/bib/references.bib"))
+;;citar-bibliography org-cite-global-bibliography)
+;; optional: org-cite-insert is also bound to C-c C-x C-@
+;;:hook
+;;(LaTeX-mode . citar-capf-setup)
+;;(org-mode . citar-capf-setup))
+;;  :bind
+;;  (:map org-mode-map :package org ("C-c b" . #'org-cite-insert)))
+
+(use-package! citar-embark
+  :after citar embark
+  :no-require
+  :config (citar-embark-mode))
+
+(setq! citar-templates
+       '((main . "${author editor:30%sn}     ${date year issued:4}     ${title:48}")
+         (suffix . "          ${=key= id:15}    ${=type=:12}    ${tags keywords:*}")
+         (preview . "${author editor:%etal} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
+         (note . "Notes on ${author editor:%etal}, ${title"))
+       )
