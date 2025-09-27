@@ -2,14 +2,14 @@
 
 ;; Place your private configuration here! Remember, you do not need to run 'doom
 ;; sync' after modifying this file!
+(setq user-full-name "Binjian Xin"
+  user-mail-address "binjian.xin@hotmail.com")
 
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets. It is optional.
 ;; (setq user-full-name "John Doe"
 ;;       user-mail-address "john@doe.com")
-(setq user-full-name "Binjian Xin"
-      user-mail-address "binjian.xin@hotmail.com")
 
 ;; Doom exposes five (optional) variables for controlling fonts in Doom:
 ;;
@@ -31,49 +31,23 @@
 ;; refresh your font settings. If Emacs still can't find your font, it likely
 ;; wasn't installed correctly. Font issues are rarely Doom issues!
 
-;;(set-face-attribute 'default nil
-;;                    :family "Sarasa Mono SC Nerd"
-;;                    :height 140
-;;                    )
-;;
-;;(setq doom-font (font-spec :family "Source Han Sans" :weight 'medium :size 13.0))
-
 (set-language-environment "UTF-8")
 
 (setq doom-font (font-spec :family "Sarasa Term SC Nerd" :size 14 :weight 'medium)
-      doom-variable-pitch-font (font-spec :family "Sarasa Gothic SC" :size 14))
+  doom-variable-pitch-font (font-spec :family "Sarasa Gothic SC" :size 14))
 
 (defun my-cjk-font()
   (dolist (charset '(kana han cjk-misc symbol bopomofo))
     (set-fontset-font t charset (font-spec :family "LXGW Wenkai Mono"))))
 (add-hook 'after-setting-font-hook #'my-cjk-font)
-
-;;(setq doom-font (font-spec :family "Sarasa Fixed SC" :size 12 :weight 'medium)
-;;      doom-variable-pitch-font (font-spec :family "Sarasa Gothic SC" :size 12))
-;;(setq doom-font (font-spec :family "MesloLGS NF" :weight 'medium :size 13))
-;;(setq doom-font (font-spec :family "Iosevka" :weight 'medium :size 13.0))
-;;(setq doom-font (font-spec :family "LXGW Wenkai Mono" :size 12 :weight 'medium)
-;;      doom-variable-pitch-font (font-spec :family "LXGW Wenkai Gothic" :size 12))
-;;(setq doom-font (font-spec :family "Noto Sans Mono CJK SC" :weight 'medium :size 13.0))
-
-;;(defun my-cjk-font()
-;;  (dolist (charset '(kana han cjk-misc symbol bopomofo))
-;;    (set-fontset-font t charset (font-spec :family "Sarasa Mono SC"))))
-;;(set-fontset-font t charset (font-spec :family "Sarasa Term SC Nerd"))))
-;;(set-fontset-font t charset (font-spec :family "Sarasa Mono SC Nerd"))))
-
-
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-zenburn)
+(setq doom-theme 'doom-one)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type t)
-
-;;(use-package all-the-icons
-;;  :if (display-graphic-p))
 
 (setq persp-emacsclient-init-frame-behaviour-override "main")
 
@@ -85,127 +59,6 @@
   (setq-local indent-line-function 'insert-tab))
 
 (add-hook 'emacs-lisp-mode-hook 'set-elisp-indentation-offset)
-;; (use-package pyim
-;;   :ensure nil
-;;   :config
-;;   ;; 激活 basedict 拼音词库
-;;   (use-package pyim-basedict
-;;     :ensure nil
-;;     :config (pyim-basedict-enable))
-
-;;   ;; 五笔用户使用 wbdict 词库
-;;   ;; (use-package pyim-wbdict
-;;   ;;   :ensure nil
-;;   ;;   :config (pyim-wbdict-gbk-enable))
-
-;;   (setq default-input-method "pyim")
-;;   (global-set-key (kbd "C-\\") 'toggle-input-method)
-
-;;   ;; 我使用全拼
-;;   (setq pyim-default-scheme 'quanpin)
-;;   ;;(setq pyim-default-scheme 'pyim-shuangpin)
-;;   ;;(setq pyim-default-scheme 'microsoft-shuangpin)
-
-;;   ;;(setq pyim-cloudim 'baidu)
-;;   (setq pyim-cloudim 'google)
-;;   ;; 设置 pyim 探针设置，这是 pyim 高级功能设置，可以实现 *无痛* 中英文切换 :-)
-;;   ;; 我自己使用的中英文动态切换规则是：
-;;   ;; 1. 光标只有在注释里面时，才可以输入中文。
-;;   ;; 2. 光标前是汉字字符时，才能输入中文。
-;;   ;; 3. 使用 M-j 快捷键，强制将光标前的拼音字符串转换为中文。
-;;   (setq-default pyim-english-input-switch-functions
-;;                 '(pyim-probe-dynamic-english
-;;                   pyim-probe-isearch-mode
-;;                   pyim-probe-program-mode
-;;                   pyim-probe-org-structure-template))
-
-;;   (setq-default pyim-punctuation-half-width-functions
-;;                 '(pyim-probe-punctuation-line-beginning
-;;                   pyim-probe-punctuation-after-punctuation))
-
-;;  ;; 开启拼音搜索功能
-;;   (pyim-isearch-mode 1)
-
-;;   (setq-default pyim-punctuation-translate-p '(auto))
-
-;;   (setq pyim-indicator-list (list  #'pyim-indicator-with-cursor-color #'pyim-indicator-with-modeline))
-;;   ;; 使用 pupup-el 来绘制选词框
-;;   (setq pyim-page-tooltip 'popup)
-
-;;   ;; 选词框显示5个候选词
-;;   (setq pyim-page-length 5)
-
-;;   ;; 让 Emacs 启动时自动加载 pyim 词库
-;;   (add-hook 'emacs-startup-hook
-;;             #'(lambda () (pyim-restart-1 t)))
-;;   :bind
-;;   (("M-j" . pyim-convert-code-at-point) ;与 pyim-probe-dynamic-english 配合
-;;    ("C-;" . pyim-delete-word-from-personal-buffer)))
-
-;;(require 'pyim)
-;;(require 'pyim-basedict)
-;;(require 'pyim-cregexp-utils)
-
-;; ;; 如果使用 popup page tooltip, 就需要加载 popup 包。
-;;(require 'popup)
-;;(setq pyim-page-tooltip 'popup)
-
-;; 如果使用 pyim-dregcache dcache 后端，就需要加载 pyim-dregcache 包。
-;;(require 'pyim-dregcache)
-;;(setq pyim-dcache-backend 'pyim-dregcache)
-
-;;(pyim-basedict-enable)
-
-;;(setq default-input-method "pyim")
-;; (global-set-key (kbd "C-\\") 'toggle-input-method)
-
-;; 显示5个候选词。
-;;(setq pyim-page-length 5)
-
-;; 金手指设置，可以将光标处的编码，比如：拼音字符串，转换为中文。
-;; (global-set-key (kbd "M-j") 'pyim-convert-string-at-point)
-
-;; ;; 按 "C-<return>" 将光标前的 regexp 转换为可以搜索中文的 regexp.
-;; ;;(define-key minibuffer-local-map (kbd "C-<return>") 'pyim-cregexp-convert-at-point)
-
-;; 我使用全拼
-;; (pyim-default-scheme 'quanpin)
-;;(pyim-default-scheme 'wubi)
-;;(pyim-default-scheme 'cangjie)
-;;(pyim-default-scheme 'pyim-shuangpin)
-
-;; ;; 我使用云拼音
-;; (setq pyim-cloudim 'google)
-
-;; (define-key pyim-mode-map "." 'pyim-page-next-page)
-;; (define-key pyim-mode-map "," 'pyim-page-previous-page)
-
-;; (define-key pyim-mode-map ";"
-;;   (lambda ()
-;;     (interactive)
-;;     (pyim-select-word-by-number 2)))
-
-;; ;; pyim 探针设置
-;; ;; 设置 pyim 探针设置，这是 pyim 高级功能设置，可以实现 *无痛* 中英文切换 :-)
-;; ;; 我自己使用的中英文动态切换规则是：
-;; ;; 1. 光标只有在注释里面时，才可以输入中文。
-;; ;; 2. 光标前是汉字字符时，才能输入中文。
-;; ;; 3. 使用 M-j 快捷键，强制将光标前的拼音字符串转换为中文。
-;; ;; (setq-default pyim-english-input-switch-functions
-;; ;;               '(pyim-probe-dynamic-english
-;; ;;                 pyim-probe-isearch-mode
-;; ;;                 pyim-probe-program-mode
-;; ;;                 pyim-probe-org-structure-template))
-
-;; ;; (setq-default pyim-punctuation-half-width-functions
-;; ;;               '(pyim-probe-punctuation-line-beginning
-;; ;;                 pyim-probe-punctuation-after-punctuation))
-
-;; ;; 开启代码搜索中文功能（比如拼音，五笔码等）
-;; (pyim-isearch-mode 1)
-
-
-
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/.org.d/")
@@ -226,47 +79,11 @@
 ;; set org-roam directory
 (setq org-roam-directory "~/.org.d/roam")
 
-
 (setq org-element-use-cache nil)
-
-;;(setcar org-emphasis-regexp-components " \t('\"{[:nonascii:]")
-;;(setcar org-emphasis-regexp-components " \t('\"{[:alpha:]")
-;;(setcar (nthcdr 1 org-emphasis-regexp-components) "- \t.,:!?;'\")}\\[[:nonascii:]")
-;;(setcar (nthcdr 1 org-emphasis-regexp-components) "[:alpha:]- \t.,:!?;'\")}\\")
-;;(org-set-emph-re 'org-emphasis-regexp-components org-emphasis-regexp-components)
-
-
-
-;;(setq yas-snippet-dirs '("~/.org.d/snippets"))
-;; (yas-global-mode 1))
 (use-package doom-snippets
   :load-path "~/.doom.d/snippets"
   :after yasnippet)
 
-
-
-;;(setq org-babel-default-header-args:jupyter-typescript '(
-;;                                                        (:session . "ts")
-;;                                                        (:kernel . "tslab")))
-
-;; this seems to add syntax-highlighting to jupyter-python and jupyter-typescript blocks
-;;(after! org-src
-;;(dolist (lang '(python typescript jupyter))
-;;(cl-pushnew (cons (format "jupyter-%s" lang) lang)
-;;               org-src-lang-modes :key #'car))
-;; (org-babel-jupyter-override-src-block "python") ;; alias all python to jupyter-python
-;; (org-babel-jupyter-override-src-block "typescript") ;; alias all python to jupyter-python
-;; )
-;; go-translate
-
-;;(setq go-translate-base-url "https://translate.google.cn")
-;;(setq go-translate-local-language "zh-CN")
-;;(setq go-translate-buffer-follow-p t)       ; focus the result window
-;;(setq go-translate-buffer-source-fold-p t)  ; fold the source text in the result window
-;;(setq go-translate-buffer-line-wrap-p nil)
-;; (setq go-translate-buffer-window-config ..) ; config the result window as your wish
-;; (setq go-translate-inputs-function #'go-translate-inputs-current-or-prompt)
-;;
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
 ;;
@@ -290,43 +107,70 @@
 ;;   `require' or `use-package'.
 ;; - `map!' for binding new keys
 ;;
+;; To get information about any of these functions/macros, move the cursor over
+;; the highlighted symbol at press 'K' (non-evil users must press 'C-c c k').
+;; This will open documentation for it, including demos of how they are used.
+;; Alternatively, use `C-h o' to look up a symbol (functions, variables, faces,
+;; etc).
+;;
+;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
+;; they are implemented.
 
+;; If you use `org' and don't want your org files in the default location below,
+;; change `org-directory'. It must be set before org loads!
+(setq org-directory "~/.org.d/")
 
 (use-package! websocket
   :after org-roam2)
 
+(after! org
+  ;;  (load-library "ox-reveal")
+  ;;  (setq org-reveal-root "file:///vlt/devel/misc/reveal/reveal.js")
+  (setq org-todo-keywords
+    '((sequence "TODO(t)" "STARTED(s!)" "|" "DONE(d!)" "WAITING(w@/!)" "DELEGATED(g@/!)" "CANCELLED(c@)" "DEFERRED(f@)"))))
+
+(setq org-agenda-files (list "~/.org.d/agenda/projects.org"
+                         "~/.org.d/agenda/managements.org"
+                         "~/.org.d/agenda/research.org"))
+
+
+(setq org-tag-alist '(("battery" . ?b) ("veos" . ?v) ("simulation" . ?s) ("research" . ?r)))
+;; set org-roam directory
+(setq org-roam-directory "~/.org.d/roam")
+
+
+(setq org-element-use-cache nil)
+
+(use-package doom-snippets
+  :load-path "~/.doom.d/snippets"
+  :after yasnippet)
 (use-package! org-roam-ui
   :after org-roam2
-  ;;  :hook (after-init . org-roam-ui-mode)
-  :config
+  ;;  :hook (after-init . org-roam-ui-mode) :config
   (setq org-roam-ui-sync-theme t
-        org-roam-ui-follow t
-        org-roam-ui-update-on-save t
-        org-roam-completion-everywhere t
-        org-roam-ui-open-on-start t))
+    org-roam-ui-follow t
+    org-roam-ui-update-on-save t
+    org-roam-completion-everywhere t
+    org-roam-ui-open-on-start t))
 (setq org-superstar-headline-bullets-list '("⁖" "◉" "○" "✸" "✿"))
 
-;;(use-package! nov
-;;  :mode ("\\.epub\\'" . nov-mode)
-;;  :config
-;;  (setq nov-save-palce-file (concat doom-cache-dir "nov-places")))
 (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
 
 (setq org-journal-date-prefix "#+TITLE: "
-      org-journal-time-prefix "* "
-      org-journal-date-format "%a, %Y-%m-%d"
-      org-journal-file-format "%Y-%m-%d.org")
+  org-journal-time-prefix "* "
+  org-journal-date-format "%a, %Y-%m-%d"
+  org-journal-file-format "%Y-%m-%d.org")
 (setq org-journal-enable-agenda-integration t)
 (setq auto-save-default t
-      make-backup-files t)
+  make-backup-files t)
 
 (setq confirm-kill-emacs nil)
 (let ((alternatives '("doom-emacs-bw-light.svg"
-                      "doom-emacs-flugo-slant_out_purple-small.png"
-                      "doom-emacs-flugo-slant_out_bw-small.png")))
+                       "doom-emacs-flugo-slant_out_purple-small.png"
+                       "doom-emacs-flugo-slant_out_bw-small.png")))
   (setq fancy-splash-image
-        (concat doom-user-dir "splash/"
-                (nth (random (length alternatives)) alternatives))))
+    (concat doom-user-dir "splash/"
+      (nth (random (length alternatives)) alternatives))))
 
 (after! org
   (setq org-special-ctrl-a/e t)
@@ -347,89 +191,48 @@
   (setq org-clock-persist t)
   (org-clock-persistence-insinuate))
 
-(use-package! org-jira
-  :after org)
-(make-directory "~/.org.d/jira" 'ignore-if-exists)
-(setq jiralib-url "https://jira.newrizon.work/")
-
-;; This is an Emacs package that creates graphviz directed graphs from
-;; the headings of an org file
-;;(use-package org-mind-map
-;;  :init
-;;  (require 'ox-org)
-;;  :ensure t
-;; Uncomment the below if 'ensure-system-packages` is installed
-;;:ensure-system-package (gvgen . graphviz)
-;;  :config
-;;  (setq org-mind-map-engine "dot")       ; Default. Directed Graph
-;; (setq org-mind-map-engine "neato")  ; Undirected Spring Graph
-;; (setq org-mind-map-engine "twopi")  ; Radial Layout
-;; (setq org-mind-map-engine "fdp")    ; Undirected Spring Force-Directed
-;; (setq org-mind-map-engine "sfdp")   ; Multiscale version of fdp for the layout of large graphs
-;; (setq org-mind-map-engine "twopi")  ; Radial layouts
-;; (setq org-mind-map-engine "circo")  ; Circular Layout
-;;  )
+;;(use-package! org-jira
+;;  :after org)
+;;(make-directory "~/.org.d/jira" 'ignore-if-exists)
+;;(setq jiralib-url "https://jira.newrizon.work/")
 
 (setq request-log-level 'blather)
 (setq request-message-level 'blather)
 
-;;(use-package! lsp-pyright
-;;  :hook (python-mode . (lambda () (require 'lsp-pyright)))
-;;  :custom
-;;  (lsp-pyright-multi-root nil))
-
 (setq clippy-tip-show-function #'clippy-popup-tip-show)
-;;(use-package! highlight-indent-guides
-;;  :hook 'prog-mode-hook 'highlight-indent-guides-mode)
 
-
-;;(setq exec-path (append exec-path '("/dpt/mambaforge/bin")))
-;;(setq exec-path (append exec-path '("/dpt/micromamba/bin")))
-;;(setq exec-path (append exec-path '("/dpt/.pyenv/shims/")))
-;; (setq hightlight-indent-guides-method 'fill)
 (use-package! lsp-pyright
   :ensure t
   :hook (python-mode . (lambda ()
                          (require 'lsp-pyright)
                          (lsp))))  ; or lsp-deferred
 
-(setq lsp-pyright-use-library-code-for-types t) ;; set this to nil if getting too many false positive type errors
-(setq lsp-pyright-stub-path (concat (getenv "HOME") "/src/python-type-stubs")) ;; example
-(setq poetry-tracking-mode nil)
-(setq lsp-enable-file-watchers nil)
-
-;;(setq grip-binary-path "/home/is/.local/bin/grip")
-;;(add-hook 'markdown-mode-hook #'grip-mode)
-;;(add-hook 'org-mode-hook #'grip-mode)
-;;(setq grip-url-browser "google-chrome")
-;;(setq grip-update-after-chage nil)
+;;(setq lsp-pyright-use-library-code-for-types t) ;; set this to nil if getting too many false positive type errors
+;;(setq lsp-pyright-stub-path (concat (getenv "HOME") "/src/python-type-stubs")) ;; example
+;;(setq poetry-tracking-mode nil)
+;;(setq lsp-enable-file-watchers nil)
 
 (setq markdown-split-window-direction 'right)
 (setq markdown-enable-wiki-links t
-      markdown-enable-math t
-      markdown-italic-underscore t
-      markdown-asymmetric-header t
-      markdown-make-gfm-checkboxes-buttons t)
+  markdown-enable-math t
+  markdown-italic-underscore t
+  markdown-asymmetric-header t
+  markdown-make-gfm-checkboxes-buttons t)
 
 '(+markdown-compile-pandoc
-  +markdown-compile-marked
-  +markdown-compile-markdown
-  +markdown-compile-multimarkdown)
+   +markdown-compile-marked
+   +markdown-compile-markdown
+   +markdown-compile-multimarkdown)
 
-;;(usepackage! flycheck-markdown-mdl-executable
-;;        :after flycheck
-;;        :config
-;;        (setq flycheck-markdown-mdl-executable "/home/is/.local/bin/mdl"))
-;;
-;;
-(setq exec-path (append exec-path '("/dpt/.pyenv/bin")))
-(use-package pyenv-mode
-  :ensure t
-  :init
-  (add-to-list 'exec-path "/dpt/.pyenv/shims")
-  (setenv "WORKON_HOME" "/dpt/.pyenv/versions/")
-  :config
-  (pyenv-mode))
+
+;;(setq exec-path (append exec-path '("/dpt/.pyenv/bin")))
+;;(use-package pyenv-mode
+;;  :ensure t
+;;  :init
+;;  (add-to-list 'exec-path "/dpt/.pyenv/shims")
+;;  (setenv "WORKON_HOME" "/dpt/.pyenv/versions/")
+;;  :config
+;;  (pyenv-mode))
 
 (use-package flycheck
   :ensure t
@@ -455,62 +258,14 @@
 ;;(conda-env-autoactivate-mode t)
 
 
-(custom-set-variables
- '(conda-anaconda-home "/dpt/micromamba/"))
-
-(setq conda-env-home-directory (expand-file-name "/dpt/micromamba")
-      conda-env-subdirectory "envs")
-
-;;(require 'company-org-roam)
-;;(use-package company-org-roam
-;;  :when (featurep! :completion company)
-;;  :after org-roam--current-buffer:config
-;;  (set-company-ba wvckend! 'org-mode '(company-org-roam company-yasnippet)))
-;; to get information about any of these functions/macros, move the cursor over
-;; the highlighted symbol at press 'k' (non-evil users must press 'c-c c k').
-;; this will open documentation for it, including demos of how they are used.
+;;(custom-set-variables
+;; '(conda-anaconda-home "/dpt/micromamba/"))
 ;;
-;; To get information about any of these functions/macros, move the cursor over
-;; the highlighted symbol at press 'K' (non-evil users must press 'C-c c k').
-;; This will open documentation for it, including demos of how they are used.
-;; Alternatively, use `C-h o' to look up a symbol (functions, variables, faces,
-;; etc).
-;;
-;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
-;; they are implemented.
-;;(setq url-proxy-services
-;;   '(("no_proxy" . "^\\(localhost\\|10\\..*\\|192\\.168\\..*\\)")
-;;     ("http" . "127.0.0.1:20171")
-;;     ("https" . "127.0.0.1:20171")
-;;     ("ftp" . "127.0.0.1:20170")
-;;     ("socks" . "127.0.0.1:20171")))
-
-;;(setq url-http-proxy-basic-auth-storage
-;;    (list (list "127.0.0.1:20171"
-;;                (cons "Input your LDAP UID !"
-;;                      (base64-encode-string "LOGIN:PASSWORD")))))
-
-;;:ensure t
-;;:if (eq system-type 'darwin)
-;;(pdf-tools-install)
-;;(use-package! pdf-tools
-;;  :config
-;;  (setq-default pdf-view-display-size 'fit-width)
-;;  (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward)
-;;  :custom
-;;  (pdf-annot-activate-created-annotations t "automatically annotate highlights"))
-;;
-;;(setq pdf-view-use-scaling t
-;;      pdf-view-use-imagemagick nil)
-;;
-;;(setq TeX-view-program-selection '((output-pdf "PDF Tools"))
-;;      TeX-view-program-list '(("PDF Tools" TeX-porg-qldf-tools-sync-view))
-;;      rg
-;;
-;;      TeX-source-correlate-start-server t)
+;;(setq conda-env-home-directory (expand-file-name "/dpt/micromamba")
+;;      conda-env-subdirectory "envs")
 
 (add-hook 'TeX-after-compilation-finished-functions
-          #'TeX-revert-document-buffer)
+  #'TeX-revert-document-buffer)
 
                                         ; START TABS CONFIG
 ;; Create a variable for our preferred tab width
@@ -551,40 +306,40 @@
 ;; This will also show trailing characters as they are useful to spot.
 (setq whitespace-style '(face tabs tab-mark trailing))
 (custom-set-faces
- '(whitespace-tab ((t (:foreground "#636363")))))
+  '(whitespace-tab ((t (:foreground "#636363")))))
 (setq whitespace-display-mappings
-      '((tab-mark 9 [124 9] [92 9]))) ; 124 is the ascii ID for '\|'
+  '((tab-mark 9 [124 9] [92 9]))) ; 124 is the ascii ID for '\|'
 (global-whitespace-mode) ; Enable whitespace mode everywhere
                                         ; END TABS CONFIG
 
 (require 'logview) ;; if you want interactive shell support, include:
 (setq doom-themes-neotree-file-icons t)
 
-(setq tramp-default-method "ssh")
-(after! tramp
-  (setenv "SHELL" "/bin/zsh")
-  (setq tramp-shell-prompt-pattern "\\(?:^\\|\\)[^]#$%>\0]*#?[]#$%>].* *\\(\\[[n-9;]*[a-zA-Z] *\\)*")) ;; default + ?
+;;(setq tramp-default-method "ssh")
+;;(after! tramp
+;;  (setenv "SHELL" "/bin/zsh")
+;;  (setq tramp-shell-prompt-pattern "\\(?:^\\|\\)[^]#$%>\0]*#?[]#$%>].* *\\(\\[[n-9;]*[a-zA-Z] *\\)*")) ;; default + ?
 ;; (eval-after-load 'tramp '(setenv "SHELL" "/bin/zsh"))
 
-(when (eq window-system 'w32)
-  (setq tramp-default-method "plink")
-  (when (and (not (string-match putty-directory (getenv "PATH")))
-             (file-directory-p putty-directory))
-    (setenv "PATH" (concat putty-directory ";" (getenv "PATH")))
-    (add-to-list 'exec-path putty-directory)))
+;;(when (eq window-system 'w32)
+;;  (setq tramp-default-method "plink")
+;;  (when (and (not (string-match putty-directory (getenv "PATH")))
+;;             (file-directory-p putty-directory))
+;;    (setenv "PATH" (concat putty-directory ";" (getenv "PATH")))
+;;    (add-to-list 'exec-path putty-directory)))
 
 ;;(use-package! beacon)
 ;;(after! beacon (beacon-mode 1))
 
-(use-package! focus)
 
-(add-to-list 'load-path "~/.emacs.d/impatient-mode")
-(require 'impatient-mode)
+;;(add-to-list 'load-path "~/.emacs.d/impatient-mode")
+;;(require 'impatient-mode)
 
-(use-package! python-black
-  :demand t
-  :after python
-  :hook (python-mode . python-black-on-save-mode-enable-dwim))
+;;(use-package! python-black
+;;  :demand t
+;;  :after python
+;;  :hook (python-mode . python-black-on-save-mode-enable-dwim))
+
 
 ;;(setq org-plantuml-jar-path "d:/Programme/plantuml.jar")
 ;;(defun my/pretty-symbols ()
@@ -596,24 +351,6 @@
 ;;            ("#+results:" . "🔨")
 ;;            ("#+RESULTS:" . "🔨"))))
 ;;
-(eval-after-load 'js-mode
-  '(add-hook 'js-mode-hook #'add-node-modules-path))
-
-(setenv "NODE_PATH"
-        (concat
-         (getenv "HOME") "~/node_modules"  ":"
-         (getenv "NODE_PATH")
-         )
-        )
-(setq ob-mermaid-cli-path (concat (getenv "HOME") "/node_modules/.bin/mmdc_emacs"))
-
-
-(setq org-excalidraw-directory (concat (getenv "HOME") "/.org.d/excalidraw"))
-
-;;(add-hook 'org-mode-hook 'my/pretty-symbols)
-;;(global-prettify-symbols-mode +1)
-(setq doom-theme 'doom-ephemeral)
-
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((emacs-lisp . t)
@@ -623,9 +360,6 @@
    (jupyter . t)
    (mermaid . t)
    (scheme . t)))
-
-;;(org-babel-jupyter-override-src-block "python")
-
 
 (with-eval-after-load 'ox-latex
   (add-to-list 'org-latex-classes
@@ -791,18 +525,19 @@
 
 ;;(require 'zmq)
 
-(use-package org-ai
-  :ensure t
-  :commands (org-ai-mode
-             org-ai-global-mode)
-  :init
-  (add-hook 'org-mode-hook #'org-ai-mode) ; enable org-ai in org-mode
-  (org-ai-global-mode) ; installs global keybindings on C-c M-a
-  :config
-  (setq org-ai-default-chat-model "gpt-4") ; if you are on the gpt-4 beta:
-  (setq org-ai-image-directory "~/.org.d/roam/img/org-ai-images/")
-  (setq org-ai-sd-endpoint-base "http://localhost:7861/")
-  (org-ai-install-yasnippets)) ; if you are using yasnippet and want `ai` snippets
+;;(use-package org-ai
+;;
+;;  :ensure t
+;;  :commands (org-ai-mode
+;;             org-ai-global-mode)
+;;  :init
+;;  (add-hook 'org-mode-hook #'org-ai-mode) ; enable org-ai in org-mode
+;;  (org-ai-global-mode) ; installs global keybindings on C-c M-a
+;;  :config
+;;  (setq org-ai-default-chat-model "gpt-4") ; if you are on the gpt-4 beta:
+;;  (setq org-ai-image-directory "~/.org.d/roam/img/org-ai-images/")
+;;  (setq org-ai-sd-endpoint-base "http://localhost:7861/")
+;;  (org-ai-install-yasnippets)) ; if you are using yasnippet and want `ai` snippets
 ;;(use-package jupyter
 ;;  :commands (jupyter-run-server-repl
 ;;             jupyter-run-repl
@@ -850,21 +585,21 @@
                 "LaTeX"))))))
 (latex-preview-pane-enable)
 
-(use-package! ox-moderncv
-  :load-path "straight/repos/org-cv/"
-  :init (require 'ox-moderncv))
-
-(use-package! ox-altacv
-  :load-path "straight/repos/org-cv/"
-  :init (require 'ox-altacv))
-
-(use-package! ox-awesomecv
-  :load-path "straight/repos/org-cv/"
-  :init (require 'ox-awesomecv))
-
-(use-package! ox-hugocv
-  :load-path "straight/repos/org-cv/"
-  :init (require 'ox-hugocv))
+;;(use-package! ox-moderncv
+;;  :load-path "straight/repos/org-cv/"
+;;  :init (require 'ox-moderncv))
+;;
+;;(use-package! ox-altacv
+;;  :load-path "straight/repos/org-cv/"
+;;  :init (require 'ox-altacv))
+;;
+;;(use-package! ox-awesomecv
+;;  :load-path "straight/repos/org-cv/"
+;;  :init (require 'ox-awesomecv))
+;;
+;;(use-package! ox-hugocv
+;;  :load-path "straight/repos/org-cv/"
+;;  :init (require 'ox-hugocv))
 
 ;;(setq elfeed-feeds
 ;;      '(("https://rss.arxiv.org/rss/cs.AI+cs.CV+cs.GL+cs.LG+cs.MA+cs.NE+cs.RO+cs.SC+eess.AS+eess.IV+eess.SY" arx ai)

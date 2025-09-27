@@ -49,19 +49,13 @@
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;; (unpin! t)
 
-;;(unpin! org-roam comapny-org-roam)
-
-;;(package! company-org-roam
-;;  :recipe (:host github :repo "jethrokuan/company-org-roam"))
-
-
-;;(add-to-list 'package-archives '( "jcs-elpa" . "https://jcs-emacs.github.io/jcs-elpa/packages/") t)
 
 (package! buffer-move)
 (package! websocket)
+
 (package! org-roam-ui
   :recipe (:host github :repo "org-roam/org-roam-ui" :files ("*.el" "out")))
-(package! go-translate)
+;;(package! go-translate)
 (package! markdown-preview-eww)
 
 ;;(package! zmq)
@@ -77,10 +71,10 @@
 
 (package! gitconfig-mode
   :recipe (:host github :repo "magit/git-modes"
-	   :files ("gitconfig-mode.el")))
+	           :files ("gitconfig-mode.el")))
 (package! gitignore-mode
   :recipe (:host github :repo "magit/git-modes"
-	   :files ("gitignore-mode.el")))
+	           :files ("gitignore-mode.el")))
 
 (package! markdown-preview-eww)
 
@@ -153,14 +147,14 @@
 ;;  :recipe (:host github :repo "emacs-openai/codegpt"))
 
 (package! epc)
-
-(package! chatgpt
-  :recipe (:host github :repo "joshcho/ChatGPT.el" :files ("dist" "*.el")))
-
-
-(package! org-ai)
-;;(package! zmq)
-
+;;
+;;(package! chatgpt
+;;  :recipe (:host github :repo "joshcho/ChatGPT.el" :files ("dist" "*.el")))
+;;
+;;
+;;(package! org-ai)
+;;;;(package! zmq)
+;;
 (package! color-theme-sanityinc-tomorrow)
 ;;(package! org-excalidraw)
 (package! org-excalidraw
@@ -168,7 +162,7 @@
 
 ;; remove cl warning on emacs startup
 ;; (package! cl-libify)
-;;(package! latex-preview-pane)
+(package! latex-preview-pane)
 
 (package! org-ql
   :recipe (:host github :repo "alphapapa/org-ql"))
@@ -177,49 +171,49 @@
 (package! helm-org-ql
   :recipe (:host github :repo "alphapapa/org-ql" :files ("helm-org-ql.el")))
 
-;;(package! all-the-icons)
+(package! all-the-icons)
 ;;(package! eaf-all-the-icons)
 
 (add-hook 'TeX-mode-hook
-          (lambda ()
-            (add-to-list 'TeX-output-view-style
-                         '("^pdf$" "."
-                           "/Applications/Skim.app/Contents/SharedSupport/displayline %n %o %b")))
-          )
+  (lambda ()
+    (add-to-list 'TeX-output-view-style
+      '("^pdf$" "."
+         "/Applications/Skim.app/Contents/SharedSupport/displayline %n %o %b")))
+  )
 
 ;; Use PDF mode by default
 (setq-default TeX-PDF-mode t)
 ;; Make emacs aware of multi-file projects
 (setq-default TeX-master nil)
-
-;;(package! emacs-application-framework
-;;  :recipe (:host github :repo "emacs-eaf/emacs-application-framework"
-;;           :files ("*.el" "*.py" "app" "core")
-;;           :build (:not compile)))
 ;;
-;;(package! ctable :recipe (:host github :repo "kiwanami/emacs-ctable"))
-;;(package! deferred :recipe (:host github :repo "kiwanami/emacs-deferred"))
-;;(package! epc :recipe (:host github :repo "kiwanami/emacs-epc"))
-
+;;;;(package! emacs-application-framework
+;;;;  :recipe (:host github :repo "emacs-eaf/emacs-application-framework"
+;;;;           :files ("*.el" "*.py" "app" "core")
+;;;;           :build (:not compile)))
+;;;;
+;;;;(package! ctable :recipe (:host github :repo "kiwanami/emacs-ctable"))
+;;;;(package! deferred :recipe (:host github :repo "kiwanami/emacs-deferred"))
+;;;;(package! epc :recipe (:host github :repo "kiwanami/emacs-epc"))
+;;
 (package! org-preview-html)
 ;;  :recipe (:host github :repo "jakebox/org-preview-html"))
-(package! org-cv
-  :recipe (:host github
-           :repo "Binjian/org-cv"))
-
-;;(package! ox-moderncv)
-;;(package! ox-altacv)
-;;(package! ox-hugocv)
-
-;;(when (package! org)
-;;  package! ox-awesomecv)
-
-;;(package! elfeed)
-;;(package! elfeed-org)
-
+;;(package! org-cv)
+;;;;  :recipe (:host github
+;;;;            :repo "Binjian/org-cv"))
+;;
+;;;;(package! ox-moderncv)
+;;;;(package! ox-altacv)
+;;;;(package! ox-hugocv)
+;;
+;;;;(when (package! org)
+;;;;  package! ox-awesomecv)
+;;
+;;;;(package! elfeed)
+;;;;(package! elfeed-org)
+;;
 (package! elfeed-score)
 (package! org-ref)
 (package! org-roam-bibtex)
-
-;;(package! rka-academic
-;;  :recipe (:host nil :repo "https://gist.github.com/Binjian/123b7c2c1cf5f2ae6557ceda2f0efe04"))
+;;
+;;;;(package! rka-academic
+;;;;  :recipe (:host nil :repo "https://gist.github.com/Binjian/123b7c2c1cf5f2ae6557ceda2f0efe04"))
