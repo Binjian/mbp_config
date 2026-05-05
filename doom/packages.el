@@ -71,10 +71,10 @@
 
 (package! gitconfig-mode
   :recipe (:host github :repo "magit/git-modes"
-	           :files ("gitconfig-mode.el")))
+	          :files ("gitconfig-mode.el")))
 (package! gitignore-mode
   :recipe (:host github :repo "magit/git-modes"
-	           :files ("gitignore-mode.el")))
+	          :files ("gitignore-mode.el")))
 
 (package! markdown-preview-eww)
 
@@ -217,3 +217,6 @@
 ;;
 ;;;;(package! rka-academic
 ;;;;  :recipe (:host nil :repo "https://gist.github.com/Binjian/123b7c2c1cf5f2ae6557ceda2f0efe04"))
+
+(package! ai-code
+  :recipe (:host github :repo "tninja/ai-code-interface.el"))

@@ -67,11 +67,11 @@
   ;;  (load-library "ox-reveal")
   ;;  (setq org-reveal-root "file:///vlt/devel/misc/reveal/reveal.js")
   (setq org-todo-keywords
-        '((sequence "TODO(t)" "STARTED(s!)" "|" "DONE(d!)" "WAITING(w@/!)" "DELEGATED(g@/!)" "CANCELLED(c@)" "DEFERRED(f@)"))))
+    '((sequence "TODO(t)" "STARTED(s!)" "|" "DONE(d!)" "WAITING(w@/!)" "DELEGATED(g@/!)" "CANCELLED(c@)" "DEFERRED(f@)"))))
 
 (setq org-agenda-files (list "~/.org.d/agenda/projects.org"
-                             "~/.org.d/agenda/managements.org"
-                             "~/.org.d/agenda/research.org"))
+                         "~/.org.d/agenda/managements.org"
+                         "~/.org.d/agenda/research.org"))
 
 
 (setq org-tag-alist '(("battery" . ?b) ("veos" . ?v) ("simulation" . ?s) ("research" . ?r)))
@@ -352,23 +352,23 @@
 ;;            ("#+RESULTS:" . "🔨"))))
 ;;
 (org-babel-do-load-languages
- 'org-babel-load-languages
- '((emacs-lisp . t)
-   (julia .t)
-   (python . t)
-   (ipython . t)
-   (jupyter . t)
-   (mermaid . t)
-   (scheme . t)))
+  'org-babel-load-languages
+  '((emacs-lisp . t)
+     (julia .t)
+     (python . t)
+     (ipython . t)
+     (jupyter . t)
+     (mermaid . t)
+     (scheme . t)))
 
 (with-eval-after-load 'ox-latex
   (add-to-list 'org-latex-classes
-               '("ctexart" "\\documentclass[11pt]{ctexart}"
-                 ("\\section{%s}" . "\\section*{%s}")
-                 ("\\subsection{%s}" . "\\subsection*{%s}")
-                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
+    '("ctexart" "\\documentclass[11pt]{ctexart}"
+       ("\\section{%s}" . "\\section*{%s}")
+       ("\\subsection{%s}" . "\\subsection*{%s}")
+       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+       ("\\paragraph{%s}" . "\\paragraph*{%s}")
+       ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
 ;;(setq org-latex-default-class "ctexart")
 ;;(setq org-latex-compiler "xelatex"))
 (setq org-element-use-cache t)
@@ -454,9 +454,9 @@
 
 (after! org-download
   (setq org-download-method 'directory
-        org-download-image-dir "~/.org.d/roam/img"
-        org-download-image-org-width 300
-        org-download-heading-lvl 1))
+    org-download-image-dir "~/.org.d/roam/img"
+    org-download-image-org-width 300
+    org-download-heading-lvl 1))
 
 ;; (setq-default org-download-method 'directory)
 ;; (setq-default org-download-image-dir "~/.org.d/roam/img")
@@ -468,23 +468,23 @@
 (defvar yt-iframe-format
   ;; You may want to change your width and height.
   (concat "<iframe width=\"440\""
-          " height=\"335\""
-          " src=\"https://www.youtube.com/embed/%s\""
-          " frameborder=\"0\""
-          " allowfullscreen>%s</iframe>"))
+    " height=\"335\""
+    " src=\"https://www.youtube.com/embed/%s\""
+    " frameborder=\"0\""
+    " allowfullscreen>%s</iframe>"))
 
 (org-add-link-type
- "yt"
- (lambda (handle)
-   (browse-url
-    (concat "https://www.youtube.com/embed/"
-            handle)))
- (lambda (path desc backend)
-   (cl-case backend
-     (html (format yt-iframe-format
-                   path (or desc "")))
-     (latex (format "\href{%s}{%s}"
-                    path (or desc "video"))))))
+  "yt"
+  (lambda (handle)
+    (browse-url
+      (concat "https://www.youtube.com/embed/"
+        handle)))
+  (lambda (path desc backend)
+    (cl-case backend
+      (html (format yt-iframe-format
+              path (or desc "")))
+      (latex (format "\href{%s}{%s}"
+               path (or desc "video"))))))
 
 ;;(use-package gpt)
 ;;(add-to-list 'load-path "/home/n/.emacs.d/.local/straight/repos/gpt.el")
@@ -557,32 +557,32 @@
 (add-hook 'LaTeX-mode-hook #'my-xelatex-mode-hook)
 (defun my-xelatex-mode-hook ()
   (add-to-list 'TeX-command-list
-               '("XeLaTeX" "%`xelatex%(mode)%' %t" TeX-run-TeX nil t))
+    '("XeLaTeX" "%`xelatex%(mode)%' %t" TeX-run-TeX nil t))
   (setq TeX-command-default
-        (save-excursion
-          (save-restriction
-            (widen)
-            (goto-char (point-min))
-            (let ((re (concat "^\\s-*\\\\usepackage\\(?:\\[.*\\]\\)?"
-                              "{.*\\<\\(?:font\\|math\\)spec\\>.*}")))
-              (if (re-search-forward re 3000 t)
-                  "XeLaTeX"
-                "LaTeX"))))))
+    (save-excursion
+      (save-restriction
+        (widen)
+        (goto-char (point-min))
+        (let ((re (concat "^\\s-*\\\\usepackage\\(?:\\[.*\\]\\)?"
+                    "{.*\\<\\(?:font\\|math\\)spec\\>.*}")))
+          (if (re-search-forward re 3000 t)
+            "XeLaTeX"
+            "LaTeX"))))))
 
 (add-hook 'LaTeX-mode-hook #'my-luatex-mode-hook)
 (defun my-luatex-mode-hook ()
   (add-to-list 'TeX-command-list
-               '("LuaTeX" "%`luatex%(mode)%' %t" TeX-run-TeX nil t))
+    '("LuaTeX" "%`luatex%(mode)%' %t" TeX-run-TeX nil t))
   (setq TeX-command-default
-        (save-excursion
-          (save-restriction
-            (widen)
-            (goto-char (point-min))
-            (let ((re (concat "^\\s-*\\\\usepackage\\(?:\\[.*\\]\\)?"
-                              "{.*\\<\\(?:font\\|math\\)spec\\>.*}")))
-              (if (re-search-forward re 3000 t)
-                  "LuaTeX"
-                "LaTeX"))))))
+    (save-excursion
+      (save-restriction
+        (widen)
+        (goto-char (point-min))
+        (let ((re (concat "^\\s-*\\\\usepackage\\(?:\\[.*\\]\\)?"
+                    "{.*\\<\\(?:font\\|math\\)spec\\>.*}")))
+          (if (re-search-forward re 3000 t)
+            "LuaTeX"
+            "LaTeX"))))))
 (latex-preview-pane-enable)
 
 ;;(use-package! ox-moderncv
@@ -671,8 +671,49 @@
   :config (citar-embark-mode))
 
 (setq! citar-templates
-       '((main . "${author editor:30%sn}     ${date year issued:4}     ${title:48}")
-         (suffix . "          ${=key= id:15}    ${=type=:12}    ${tags keywords:*}")
-         (preview . "${author editor:%etal} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
-         (note . "Notes on ${author editor:%etal}, ${title"))
-       )
+  '((main . "${author editor:30%sn}     ${date year issued:4}     ${title:48}")
+     (suffix . "          ${=key= id:15}    ${=type=:12}    ${tags keywords:*}")
+     (preview . "${author editor:%etal} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
+     (note . "Notes on ${author editor:%etal}, ${title"))
+  )
+
+
+(use-package ai-code
+  :config
+  (ai-code-set-backend 'codex)
+  ;; Optional: use a narrower transient menu on smaller frames
+  ;; (setq ai-code-menu-layout 'two-columns)
+  (global-set-key (kbd "C-c a") #'ai-code-menu))
+
+(add-hook 'magit-diff-mode-hook 'visual-line-mode)
+
+
+;;(use-package ai-code
+;;  ;; :straight (:host github :repo "tninja/ai-code-interface.el") ;; if you want to use straight to install, no need to have MELPA setting above
+;;  :config
+;;  ;; use codex as backend, other options are 'claude-code, 'gemini, 'github-copilot-cli, 'opencode, 'kilo, 'grok, 'cursor, 'kiro, 'codebuddy, 'aider, 'eca, 'agent-shell, 'claude-code-ide, 'claude-code-el
+;;  (ai-code-set-backend 'codex)
+;;  ;; Optional: default menu stays unchanged; use a narrower 2-column layout on smaller frames
+;;  ;; (setq ai-code-menu-layout 'two-columns)
+;;  ;; Enable global keybinding for the main menu
+;;  (global-set-key (kbd "C-c a") #'ai-code-menu)
+;;  ;; Optional: Use eat if you prefer, by default it is vterm
+;;  ;; (setq ai-code-backends-infra-terminal-backend 'eat) ;; config for native CLI backends. for external backends such as agent-shell, claude-code-ide.el and claude-code.el, please check their own config
+;;  ;; Optional: Try ghostel as an experimental backend infra
+;;  ;; (setq ai-code-backends-infra-terminal-backend 'ghostel)
+;;  ;; Optional: Disable @ file completion in comments and AI sessions
+;;  ;; (ai-code-prompt-filepath-completion-mode -1)
+;;  ;; Optional: Ask AI to run test after code changes, for a tighter build-test loop
+;;  (setq ai-code-auto-test-type 'ask-me)
+;;  ;; Optional: Offer numbered next steps for discussion prompts at send time
+;;  ;; Customize `ai-code-discussion-auto-follow-up-enabled` to non-nil
+;;  ;; or set it directly like this:
+;;  ;; (setq ai-code-discussion-auto-follow-up-enabled t)
+;;  ;; Optional: In AI session buffers, SPC in Evil normal state triggers the prompt-enter UI
+;;  (with-eval-after-load 'evil (ai-code-backends-infra-evil-setup))
+;;  ;; Optional: Turn on auto-revert buffer, so that the AI code change automatically appears in the buffer
+;;  (global-auto-revert-mode 1)
+;;  (setq auto-revert-interval 1) ;; set to 1 second for faster update
+;;  ;; Optional: Set up Magit integration for AI commands in Magit popups
+;;  (with-eval-after-load 'magit
+;;    (ai-code-magit-setup-transients)))
