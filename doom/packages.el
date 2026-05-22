@@ -49,32 +49,40 @@
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;; (unpin! t)
 
+;;(unpin! org-roam comapny-org-roam)
+
+;;(package! company-org-roam
+;;  :recipe (:host github :repo "jethrokuan/company-org-roam"))
+
+
+;;(add-to-list 'package-archives '( "jcs-elpa" . "https://jcs-emacs.github.io/jcs-elpa/packages/") t)
 
 (package! buffer-move)
 (package! websocket)
-
 (package! org-roam-ui
   :recipe (:host github :repo "org-roam/org-roam-ui" :files ("*.el" "out")))
-;;(package! go-translate)
+(package! gt)
 (package! markdown-preview-eww)
 
-;;(package! zmq)
+(package! zmq)
 
 (package! nov)
+;;(package! pdf-tools)
 (package! org-download)
 (package! org-super-agenda)
 ;;(package! ox-jira)
 (package! org-jira)
-;;(package! org-brain)
+;;(package! org-preview-html)
+
 ;;(package! polymode)
 (package! grip-mode)
 
 (package! gitconfig-mode
   :recipe (:host github :repo "magit/git-modes"
-	          :files ("gitconfig-mode.el")))
+	   :files ("gitconfig-mode.el")))
 (package! gitignore-mode
   :recipe (:host github :repo "magit/git-modes"
-	          :files ("gitignore-mode.el")))
+	   :files ("gitignore-mode.el")))
 
 (package! markdown-preview-eww)
 
@@ -102,8 +110,8 @@
 (package! ob-mermaid)
 ;;(package! org-mind-map)
 
-(package! org-reveal)
-;;(package! ox-reveal)
+;;(package! org-reveal)
+(package! ox-reveal)
 
 (package! ox-gfm)
 (package! simple-httpd)
@@ -114,10 +122,21 @@
 (package! csv-mode)
 
 (package! simple-httpd)
-;;(package! copilot
-;;  :recipe (:host github :repo "zerolfx/copilot.el" :files ("*.el" "dist")))
+(package! copilot
+  :recipe (:host github :repo "copilot-emacs/copilot.el" :files ("*.el")))
 
-(package! flycheck)
+;;(package! pdf-tools :recipe
+;;(:host github
+;;:repo "dalanicolai/pdf-tools"
+;;:branch "pdf-roll"
+;;:files ("lisp/*.el"
+;;"README"
+;;("build" "Makefile")
+;;("build" "server")
+;;(:exclude "lisp/tablist.el" "lisp/tablist-filter.el"))))
+;;
+;;(package! image-roll
+;;:recipe (:host github :repo "dalanicolai/image-roll.el"))
 
 (package! multi-term)
 
@@ -147,76 +166,57 @@
 ;;  :recipe (:host github :repo "emacs-openai/codegpt"))
 
 (package! epc)
-;;
-;;(package! chatgpt
-;;  :recipe (:host github :repo "joshcho/ChatGPT.el" :files ("dist" "*.el")))
-;;
-;;
-;;(package! org-ai)
-;;;;(package! zmq)
-;;
+
+(package! chatgpt
+  :recipe (:host github :repo "joshcho/ChatGPT.el" :files ("dist" "*.el")))
+
+
+(package! org-ai)
+;;(package! zmq)
+
 (package! color-theme-sanityinc-tomorrow)
 ;;(package! org-excalidraw)
 (package! org-excalidraw
   :recipe (:host github :repo "wdavew/org-excalidraw"))
 
-;; remove cl warning on emacs startup
-;; (package! cl-libify)
+;;(package! lemon
+;;  :recipe (:host codeberg :repo "emacs-weirdware/lemon"))
+
+
 (package! latex-preview-pane)
 
-(package! org-ql
-  :recipe (:host github :repo "alphapapa/org-ql"))
+;;(package! org-preview-html)
+
+(package! xenops)
+
+(package! biblio)
+
+;;(package! el-easydraw
+;;  :recipe (:host github :repo "misohena/el-easydraw"))
+
+(package! org-yt
+  :recipe (:host github :repo "TobiasZawada/org-yt"))
+
+(package! tomatinho
+  :recipe (:host github :repo "konr/tomatinho"))
 
 
-(package! helm-org-ql
-  :recipe (:host github :repo "alphapapa/org-ql" :files ("helm-org-ql.el")))
+;;(package! org-pomodoro
+;;  :recipe (:host github :repo "marcinkoziej/org-pomodoro"))
+;;
+;;(package! sound-wav
+;;  :recipe (:host github :repo "emacsorphanage/sound-wav"))
+(package! ztree
+  :recipe (:host codeberg :repo "fourier/ztree"))
 
-(package! all-the-icons)
-;;(package! eaf-all-the-icons)
+(package! magit-lfs)
 
-(add-hook 'TeX-mode-hook
-  (lambda ()
-    (add-to-list 'TeX-output-view-style
-      '("^pdf$" "."
-         "/Applications/Skim.app/Contents/SharedSupport/displayline %n %o %b")))
-  )
+(package! ai-code-interface.el
+  :recipe (:host github :repo "Binjian/ai-code-interface.el")
+  :pin "98b195c7b504adfa767aec9a39506450b6b0828a")
 
-;; Use PDF mode by default
-(setq-default TeX-PDF-mode t)
-;; Make emacs aware of multi-file projects
-(setq-default TeX-master nil)
-;;
-;;;;(package! emacs-application-framework
-;;;;  :recipe (:host github :repo "emacs-eaf/emacs-application-framework"
-;;;;           :files ("*.el" "*.py" "app" "core")
-;;;;           :build (:not compile)))
-;;;;
-;;;;(package! ctable :recipe (:host github :repo "kiwanami/emacs-ctable"))
-;;;;(package! deferred :recipe (:host github :repo "kiwanami/emacs-deferred"))
-;;;;(package! epc :recipe (:host github :repo "kiwanami/emacs-epc"))
-;;
-(package! org-preview-html)
-;;  :recipe (:host github :repo "jakebox/org-preview-html"))
-;;(package! org-cv)
-;;;;  :recipe (:host github
-;;;;            :repo "Binjian/org-cv"))
-;;
-;;;;(package! ox-moderncv)
-;;;;(package! ox-altacv)
-;;;;(package! ox-hugocv)
-;;
-;;;;(when (package! org)
-;;;;  package! ox-awesomecv)
-;;
-;;;;(package! elfeed)
-;;;;(package! elfeed-org)
-;;
-(package! elfeed-score)
-(package! org-ref)
-(package! org-roam-bibtex)
-;;
-;;;;(package! rka-academic
-;;;;  :recipe (:host nil :repo "https://gist.github.com/Binjian/123b7c2c1cf5f2ae6557ceda2f0efe04"))
+(package! catppuccin-theme)
 
-(package! ai-code
-  :recipe (:host github :repo "tninja/ai-code-interface.el"))
+
+(package! tokyo-theme.el
+  :recipe (:host github :repo "rawleyfowler/tokyo-theme.el")) 

@@ -2,14 +2,14 @@
 
 ;; Place your private configuration here! Remember, you do not need to run 'doom
 ;; sync' after modifying this file!
-(setq user-full-name "Binjian Xin"
-  user-mail-address "binjian.xin@hotmail.com")
 
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets. It is optional.
 ;; (setq user-full-name "John Doe"
 ;;       user-mail-address "john@doe.com")
+(setq user-full-name "Binjian Xin"
+      user-mail-address "binjian.xin@gmail.com")
 
 ;; Doom exposes five (optional) variables for controlling fonts in Doom:
 ;;
@@ -31,146 +31,188 @@
 ;; refresh your font settings. If Emacs still can't find your font, it likely
 ;; wasn't installed correctly. Font issues are rarely Doom issues!
 
-(set-language-environment "UTF-8")
+(setq doom-font (font-spec :family "Iosevka NF" :size 14 :weight 'medium)
+      doom-serif-font doom-font
+      doom-symbol-font (font-spec :family "Iosevka NF")
+      doom-variable-pitch-font (font-spec :family "Iosevka NF" :size 14 :weight 'extra-bold))
 
-(setq doom-font (font-spec :family "Sarasa Term SC Nerd" :size 14 :weight 'medium)
-  doom-variable-pitch-font (font-spec :family "Sarasa Gothic SC" :size 14))
+(setq use-default-font-for-symbols nil) 
 
 (defun my-cjk-font()
-  (dolist (charset '(kana han cjk-misc symbol bopomofo))
-    (set-fontset-font t charset (font-spec :family "LXGW Wenkai Mono"))))
-(add-hook 'after-setting-font-hook #'my-cjk-font)
+  (dolist (charset '(kana han cjk-misc hangul kanbun symbol bopomofo))
+    (set-fontset-font t charset (font-spec :family "LXGW Wenkai Mono")))
+  (dolist (charset '((#x2018 . #x2019)      ;; Curly single quotes "‘’"
+                     (#x201c . #x201d)))))  ;; Curly double quotes "“”"
+
+
+(add-hook! 'after-setting-font-hook
+           #'my-cjk-font
+           (set-fontset-font t 'latin (font-spec :family "Iosevka NF"))
+           (set-fontset-font t 'symbol (font-spec :family "Iosevka NF"))
+           (set-fontset-font t 'mathematical (font-spec :family "Iosevka NF"))
+           (set-fontset-font t 'emoji (font-spec :family "Iosevka NF")))
+
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-one)
+;;(setq doom-theme 'leuven-dark)
+(setq doom-theme 'catppuccin)
+
+(defhydra doom-window-resize-hydra (:hint nil)
+  "
+             _k_ increase height
+_h_ decrease width    _l_ increase width
+             _j_ decrease height
+"
+  ("h" evil-window-decrease-width)
+  ("j" evil-window-increase-height)
+  ("k" evil-window-decrease-height)
+  ("l" evil-window-increase-width)
+
+  ("q" nil))
+
+(map!
+ (:prefix "w"
+  :desc "Hydra resize" :n "SPC" #'doom-window-resize-hydra/body))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type t)
 
+
 (setq persp-emacsclient-init-frame-behaviour-override "main")
 
-(setq tab-bar-tab-name-function 'buffer-name)
-(defun set-elisp-indentation-offset ()
-  "Set indentation offset for Emacs Lisp mode."
-  (setq-local tab-width 2)
-  (setq-local lisp-indent-offset 2)
-  (setq-local indent-line-function 'insert-tab))
+;; Command to list ignored files:
+;; $ git ls-files --others --ignored --exclude-standard --directory
+(defun magit-ignored-files ()
+  (magit-git-items "ls-files" "--others" "--ignored" "--exclude-standard" "-z" "--directory"))
 
-(add-hook 'emacs-lisp-mode-hook 'set-elisp-indentation-offset)
+(defun magit-insert-ignored-files ()
+  (-when-let (files (magit-ignored-files))
+    (magit-insert-section (ignored)
+      (magit-insert-heading "Ignored files:")
+      (magit-insert-un/tracked-files-1 files nil)
+      (insert ?\n))))
+
+(setq magit-status-headers-hook '(magit-insert-error-header
+                                  magit-insert-diff-filter-header
+                                  magit-insert-head-branch-header
+                                  magit-insert-upstream-branch-header
+                                  magit-insert-push-branch-header
+                                  magit-insert-tags-header
+                                  magit-insert-ignored-files
+                                  ))
+
+(defun magit-add-current-buffer ()
+  "Adds (with force) the file from the current buffer to the git repo"
+  (interactive)
+  (shell-command (concat "git add -f "
+                         (shell-quote-argument buffer-file-name))))
+
+
+(setq dired-dwim-target t)
+
+(with-eval-after-load 'info
+  (info-initialize) ; Consult INFOPATH.
+  ;; Always add the default value, regardless of what INFOPATH says.
+  (dolist (info-dir (Info-default-dirs))
+    (add-to-list 'Info-directory-list info-dir)))
+
+
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/.org.d/")
+(setq org-directory  (concat (getenv "HOME") "/.org.d"))
+
+;; set export path
+(setq org-publish-project-alist
+      '(("org-notes"
+         :base-directory (concat (getenv "HOME") "/.org.d")
+         :publishing-function org-html-publish-to-html
+         :publishing-directory (concat (getenv "HOME") "/.org.d/exports")
+         )
+
+        ("org-static"
+         :base-extension "png"
+         :base-directory (concat (getenv "HOME") "/.org.d")
+         :publishing-function org-publish-attachment
+         :publishing-directory (concat (getenv "HOME") "/.org.d/exports")
+         )
+
+        ("org" :components ("org-notes" "org-static"))))
+
 
 (after! org
-  ;;  (load-library "ox-reveal")
-  ;;  (setq org-reveal-root "file:///vlt/devel/misc/reveal/reveal.js")
+  (load-library "ox-reveal")
   (setq org-todo-keywords
-    '((sequence "TODO(t)" "STARTED(s!)" "|" "DONE(d!)" "WAITING(w@/!)" "DELEGATED(g@/!)" "CANCELLED(c@)" "DEFERRED(f@)"))))
+        '((sequence "TODO(t)" "STARTED(s!)" "|" "DONE(d!)" "WAITING(w@/!)" "DELEGATED(g@/!)" "CANCELLED(c@)" "DEFERRED(f@)"))))
 
-(setq org-agenda-files (list "~/.org.d/agenda/projects.org"
-                         "~/.org.d/agenda/managements.org"
-                         "~/.org.d/agenda/research.org"))
+(setq org-agenda-files (list (concat (getenv "HOME") "/.org.d/agenda/projects.org")
+                             (concat (getenv "HOME") "/.org.d/agenda/managements.org")
+                             (concat (getenv "HOME") "/.org.d/agenda/research.org")))
 
 
 (setq org-tag-alist '(("battery" . ?b) ("veos" . ?v) ("simulation" . ?s) ("research" . ?r)))
 
 ;; set org-roam directory
-(setq org-roam-directory "~/.org.d/roam")
+(setq org-roam-directory (concat (getenv "HOME") "/.org.d/roam"))
+
 
 (setq org-element-use-cache nil)
-(use-package doom-snippets
-  :load-path "~/.doom.d/snippets"
-  :after yasnippet)
 
-;; Whenever you reconfigure a package, make sure to wrap your config in an
-;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
-;;
-;;   (after! PACKAGE
-;;     (setq x y))
-;;
-;; The exceptions to this rule:
-;;
-;;   - Setting file/directory variables (like `org-directory')
-;;   - Setting variables which explicitly tell you to set them before their
-;;     package is loaded (see 'C-h v VARIABLE' to look up their documentation).
-;;   - Setting doom variables (which start with 'doom-' or '+').
-;;
-;; Here are some additional functions/macros that will help you configure Doom.
-;;
-;; - `load!' for loading external *.el files relative to this one
-;; - `use-package!' for configuring packages
-;; - `after!' for running code after a package has loaded
-;; - `add-load-path!' for adding directories to the `load-path', relative to
-;;   this file. Emacs searches the `load-path' when you load packages with
-;;   `require' or `use-package'.
-;; - `map!' for binding new keys
-;;
-;; To get information about any of these functions/macros, move the cursor over
-;; the highlighted symbol at press 'K' (non-evil users must press 'C-c c k').
-;; This will open documentation for it, including demos of how they are used.
-;; Alternatively, use `C-h o' to look up a symbol (functions, variables, faces,
-;; etc).
-;;
-;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
-;; they are implemented.
+;;(setq yas-snippet-dirs '(
+;;	         (concat (getenv "HOME") "/.org.d/snippets/doom-suite")
+;;                         (concat (getenv "HOME") "/.org.d/snippets/andreacrotti-suite/snippets")
+;;                         (concat (getenv "HOME") "/.org.d/snippets/mooerslab-org")
+;;                         (concat (getenv "HOME") "/.org.d/snippets/madsdk-latex") ))
+(yas-global-mode 1)
 
-;; If you use `org' and don't want your org files in the default location below,
-;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/.org.d/")
+
+(latex-preview-pane-enable)
+;;(setq lsp-tex-server 'digestif)
+;; set XeTeX mode in TeX/LaTeX
+(add-hook 'LaTeX-mode-hook
+          (lambda()
+            (add-to-list 'TeX-command-list '("XeLaTeX" "%`xelatex%(mode)%' %t" TeX-run-TeX nil t))
+            (setq TeX-command-default "XeLaTeX")
+            (setq TeX-save-query nil)
+            (setq TeX-show-compilation t)))
+
+                                        ;(setq browse-url-browser-function 'browse-url-default-windows-browser)
+;;(add-hook LaTeX-mode-hook 'xenops-mode)
 
 (use-package! websocket
   :after org-roam2)
 
-(after! org
-  ;;  (load-library "ox-reveal")
-  ;;  (setq org-reveal-root "file:///vlt/devel/misc/reveal/reveal.js")
-  (setq org-todo-keywords
-    '((sequence "TODO(t)" "STARTED(s!)" "|" "DONE(d!)" "WAITING(w@/!)" "DELEGATED(g@/!)" "CANCELLED(c@)" "DEFERRED(f@)"))))
-
-(setq org-agenda-files (list "~/.org.d/agenda/projects.org"
-                         "~/.org.d/agenda/managements.org"
-                         "~/.org.d/agenda/research.org"))
-
-
-(setq org-tag-alist '(("battery" . ?b) ("veos" . ?v) ("simulation" . ?s) ("research" . ?r)))
-;; set org-roam directory
-(setq org-roam-directory "~/.org.d/roam")
-
-
-(setq org-element-use-cache nil)
-
-(use-package doom-snippets
-  :load-path "~/.doom.d/snippets"
-  :after yasnippet)
 (use-package! org-roam-ui
   :after org-roam2
-  ;;  :hook (after-init . org-roam-ui-mode) :config
+  ;;  :hook (after-init . org-roam-ui-mode)
+  :config
   (setq org-roam-ui-sync-theme t
-    org-roam-ui-follow t
-    org-roam-ui-update-on-save t
-    org-roam-completion-everywhere t
-    org-roam-ui-open-on-start t))
+        org-roam-ui-follow t
+        org-roam-ui-update-on-save t
+        org-roam-completion-everywhere t
+        org-roam-ui-open-on-start t))
 (setq org-superstar-headline-bullets-list '("⁖" "◉" "○" "✸" "✿"))
+(setq org-superstar-item-bullet-alist '((?- . "•") (?+ . "☞") (?* . "★")))
 
 (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
 
-(setq org-journal-date-prefix "#+TITLE: "
-  org-journal-time-prefix "* "
-  org-journal-date-format "%a, %Y-%m-%d"
-  org-journal-file-format "%Y-%m-%d.org")
+(setq org-journal-dir (concat (getenv "HOME") "/.org.d/journal")
+      org-journal-date-prefix "#+TITLE: "
+      org-journal-time-prefix "* "
+      org-journal-date-format "%a, %Y-%m-%d"
+      org-journal-file-format "%Y-%m-%d.org")
 (setq org-journal-enable-agenda-integration t)
 (setq auto-save-default t
-  make-backup-files t)
+      make-backup-files t)
 
 (setq confirm-kill-emacs nil)
 (let ((alternatives '("doom-emacs-bw-light.svg"
-                       "doom-emacs-flugo-slant_out_purple-small.png"
-                       "doom-emacs-flugo-slant_out_bw-small.png")))
+                      "doom-emacs-flugo-slant_out_purple-small.png"
+                      "doom-emacs-flugo-slant_out_bw-small.png")))
   (setq fancy-splash-image
-    (concat doom-user-dir "splash/"
-      (nth (random (length alternatives)) alternatives))))
+        (concat doom-user-dir "splash/"
+                (nth (random (length alternatives)) alternatives))))
 
 (after! org
   (setq org-special-ctrl-a/e t)
@@ -189,87 +231,114 @@
 
 (after! org-clock
   (setq org-clock-persist t)
+  (setq org-clock-sound (concat (getenv "HOME") "/.local/resources/long-ding.wav"))
   (org-clock-persistence-insinuate))
 
-;;(use-package! org-jira
-;;  :after org)
-;;(make-directory "~/.org.d/jira" 'ignore-if-exists)
+;;(after! org-pomodoro
+;;  (setq org-pomodoro-long-break-sound (concat (getenv "HOME") "/.local/resource/long-ding.wav")))
+;; Tomatinho Pomodoro Timer
+
+(after! org-pomodoro
+  (setq org-pomodoro-audio-player "/usr/bin/aplay")
+  (setq org-pomodoro-ticking-sound-p nil)
+  (setq org-pomodoro-finished-sound-p t)
+  ;;(setq org-pomodoro-overtime-sound (concat (getenv "HOME") "/.local/resources/Free-electro-house-drum-loop.wav"))
+  (setq org-pomodoro-overtime-sound (concat (getenv "HOME") "/.local/resources/bell.wav"))
+  (setq org-pomodoro-short-break-sound (concat (getenv "HOME") "/.local/resources/bell.wav"))
+  (setq org-pomodoro-long-break-sound  (concat (getenv "HOME") "/.local/resources/bell_mulitple.wav"))
+  (setq org-pomodoro-finished-sound  (concat (getenv "HOME") "/.local/resources/long-ding.wav"))
+  (setq org-pomodoro-ticking-sound (concat (getenv "HOME") "/.local/resources/tick.wav"))
+                                        ;(setq org-pomodoro-ticking-sound "/home/betsy/emacs.d/sms-alert-1-daniel_simon.wav")
+                                        ;  (setq org-pomodoro-ticking-sound "/home/betsy/emacs.d/elpa/org-pomodoro-20220318.1618/resources/tick.wav")
+  (setq org-pomodoro-start-sound (concat (getenv "HOME") "/.local/resources/bell.wav"))
+  (setq org-pomodoro-start-sound-p t)
+  (setq org-pomodoro-keep-killed-pomodoro-time t)
+  (setq org-pomodoro-manual-break t)
+  (setq org-pomodoro-clock-break t)
+  (setq org-pomodoro-ticking-frequency 1)
+  (setq org-pomodoro-ticking-sound-states '(:pomodoro :overtime))
+  (setq org-pomodoro-length 25
+        org-pomodoro-short-break-length 5)
+  )
+
+(use-package! org-jira
+  :after org)
+(make-directory (concat (getenv "HOME") "/.org.d/agenda/jira") 'ignore-if-exists)
 ;;(setq jiralib-url "https://jira.newrizon.work/")
 
 (setq request-log-level 'blather)
 (setq request-message-level 'blather)
 
-(setq clippy-tip-show-function #'clippy-popup-tip-show)
+;;(use-package! lsp-pyright
+;;  :hook (python-mode . (lambda () (require 'lsp-pyright)))
+;;  :custom
+;;  (lsp-pyright-multi-root nil))
 
-(use-package! lsp-pyright
-  :ensure t
-  :hook (python-mode . (lambda ()
-                         (require 'lsp-pyright)
-                         (lsp))))  ; or lsp-deferred
+(setq clippy-tip-show-function #'clippy-popup-tip-show)
+;;(use-package! highlight-indent-guides
+;;  :hook 'prog-mode-hook 'highlight-indent-guides-mode)
+
+
+;;(setq exec-path (append exec-path '("/d/miniconda3/bin")))
+;;(setq exec-path (append exec-path '("/dpt/micromamba/bin")))
+;;(setq exec-path (append exec-path '("/dpt/.pyenv/shims/")))
+;; (setq hightlight-indent-guides-method 'fill)
+;;(use-package! lsp-pyright
+;;  :ensure t
+;;  :hook (python-mode . (lambda ()
+;;                         (require 'lsp-pyright)
+;;                         (lsp))))  ; or lsp-deferred
 
 ;;(setq lsp-pyright-use-library-code-for-types t) ;; set this to nil if getting too many false positive type errors
 ;;(setq lsp-pyright-stub-path (concat (getenv "HOME") "/src/python-type-stubs")) ;; example
 ;;(setq poetry-tracking-mode nil)
 ;;(setq lsp-enable-file-watchers nil)
 
+;;(setq grip-binary-path "/home/is/.local/bin/grip")
+;;(add-hook 'markdown-mode-hook #'grip-mode)
+;;(add-hook 'org-mode-hook #'grip-mode)
+;;(setq grip-url-browser "google-chrome")
+;;(setq grip-update-after-chage nil)
+
 (setq markdown-split-window-direction 'right)
 (setq markdown-enable-wiki-links t
-  markdown-enable-math t
-  markdown-italic-underscore t
-  markdown-asymmetric-header t
-  markdown-make-gfm-checkboxes-buttons t)
+      markdown-enable-math t
+      markdown-italic-underscore t
+      markdown-asymmetric-header t
+      markdown-make-gfm-checkboxes-buttons t)
 
 '(+markdown-compile-pandoc
-   +markdown-compile-marked
-   +markdown-compile-markdown
-   +markdown-compile-multimarkdown)
+  +markdown-compile-marked
+  +markdown-compile-markdown
+  +markdown-compile-multimarkdown)
 
-
-;;(setq exec-path (append exec-path '("/dpt/.pyenv/bin")))
-;;(use-package pyenv-mode
-;;  :ensure t
-;;  :init
-;;  (add-to-list 'exec-path "/dpt/.pyenv/shims")
-;;  (setenv "WORKON_HOME" "/dpt/.pyenv/versions/")
-;;  :config
-;;  (pyenv-mode))
-
-(use-package flycheck
-  :ensure t
-  :diminish ""
-  :init
-  (progn
-    (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
-  :config
-  (global-flycheck-mode 1))
-
-;;
-;;
-;;
 (use-package markdown-mode
   :ensure t
   :mode ("README\\.md\\'" . gfm-mode)
   :init (setq markdown-command "multimarkdown"))
-(require 'conda) ;; if you want interactive shell support, include:
-(conda-env-initialize-interactive-shells)
-;; if you want eshell support, include:
-(conda-env-initialize-eshell)
-;; if you want auto-activation (see below for details), include:
-;;(conda-env-autoactivate-mode t)
 
+(use-package! pdf-tools
+  :config
+  (setq-default pdf-view-display-size 'fit-width)
+  (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward)
+  :custom
+  (pdf-annot-activate-created-annotations t "automatically annotate highlights"))
 
-;;(custom-set-variables
-;; '(conda-anaconda-home "/dpt/micromamba/"))
-;;
-;;(setq conda-env-home-directory (expand-file-name "/dpt/micromamba")
-;;      conda-env-subdirectory "envs")
+(setq pdf-view-use-scaling t
+      pdf-view-use-imagemagick nil)
+
+(setq TeX-view-program-selection '((output-pdf "PDF Tools"))
+      TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view))
+      TeX-source-correlate-start-server t)
 
 (add-hook 'TeX-after-compilation-finished-functions
-  #'TeX-revert-document-buffer)
+          #'TeX-revert-document-buffer)
 
                                         ; START TABS CONFIG
 ;; Create a variable for our preferred tab width
 (setq custom-tab-width 2)
+
+(setq centaur-tabs-icon-type 'nerd-icons)
 
 ;; Two callable functions for enabling/disabling tabs in Emacs
 (defun disable-tabs () (setq indent-tabs-mode nil))
@@ -292,7 +361,8 @@
 
 ;; Making electric-indent behave sanely
 (setq-default electric-indent-inhibit t)
-
+;; C indent
+(setq-default c-basic-offset custom-tab-width)
 ;; Make the backspace properly erase the tab instead of
 ;; removing 1 space at a time.
 (setq backward-delete-char-untabify-method 'hungry)
@@ -306,42 +376,33 @@
 ;; This will also show trailing characters as they are useful to spot.
 (setq whitespace-style '(face tabs tab-mark trailing))
 (custom-set-faces
-  '(whitespace-tab ((t (:foreground "#636363")))))
+ '(whitespace-tab ((t (:foreground "#636363")))))
 (setq whitespace-display-mappings
-  '((tab-mark 9 [124 9] [92 9]))) ; 124 is the ascii ID for '\|'
+      '((tab-mark 9 [124 9] [92 9]))) ; 124 is the ascii ID for '\|'
 (global-whitespace-mode) ; Enable whitespace mode everywhere
                                         ; END TABS CONFIG
 
 (require 'logview) ;; if you want interactive shell support, include:
 (setq doom-themes-neotree-file-icons t)
 
-;;(setq tramp-default-method "ssh")
-;;(after! tramp
-;;  (setenv "SHELL" "/bin/zsh")
-;;  (setq tramp-shell-prompt-pattern "\\(?:^\\|\\)[^]#$%>\0]*#?[]#$%>].* *\\(\\[[n-9;]*[a-zA-Z] *\\)*")) ;; default + ?
+(setq tramp-default-method "ssh")
+(after! tramp
+  (setenv "SHELL" "/bin/zsh")
+  (setq tramp-shell-prompt-pattern "\\(?:^\\|\\)[^]#$%>\0]*#?[]#$%>].* *\\(\\[[n-9;]*[a-zA-Z] *\\)*")) ;; default + ?
 ;; (eval-after-load 'tramp '(setenv "SHELL" "/bin/zsh"))
 
-;;(when (eq window-system 'w32)
-;;  (setq tramp-default-method "plink")
-;;  (when (and (not (string-match putty-directory (getenv "PATH")))
-;;             (file-directory-p putty-directory))
-;;    (setenv "PATH" (concat putty-directory ";" (getenv "PATH")))
-;;    (add-to-list 'exec-path putty-directory)))
 
-;;(use-package! beacon)
-;;(after! beacon (beacon-mode 1))
-
+(use-package! focus)
 
 ;;(add-to-list 'load-path "~/.emacs.d/impatient-mode")
-;;(require 'impatient-mode)
+(require 'impatient-mode)
 
-;;(use-package! python-black
-;;  :demand t
-;;  :after python
-;;  :hook (python-mode . python-black-on-save-mode-enable-dwim))
+(use-package! python-black
+  :demand t
+  :after python
+  :hook (python-mode . python-black-on-save-mode-enable-dwim))
 
-
-;;(setq org-plantuml-jar-path "d:/Programme/plantuml.jar")
+;;(setq org-plantuml-jar-path "/d/Programme/plantuml-1.2024.8.jar")
 ;;(defun my/pretty-symbols ()
 ;;  (setq prettify-symbols-alist
 ;;          '(("#+begin_src python" . "🐍")
@@ -351,24 +412,47 @@
 ;;            ("#+results:" . "🔨")
 ;;            ("#+RESULTS:" . "🔨"))))
 ;;
+(eval-after-load 'js-mode
+  '(add-hook 'js-mode-hook #'add-node-modules-path))
+
+;;(setenv "NODE_PATH"
+;;        (concat
+;;         "/d/programme/node_modules"  ":"
+;;         (getenv "NODE_PATH")
+;;         )
+;;        )
+;;
+(setq ob-mermaid-cli-path "/d/.asdf/shims/mmdc")
+;;
+;;(setq org-excalidraw-directory "/d/05-doc/org/excalidraw")
+
+;;(add-hook 'org-mode-hook 'my/pretty-symbols)
+;;(global-prettify-symbols-mode +1)
+
 (org-babel-do-load-languages
-  'org-babel-load-languages
-  '((emacs-lisp . t)
-     (julia .t)
-     (python . t)
-     (ipython . t)
-     (jupyter . t)
-     (mermaid . t)
-     (scheme . t)))
+ 'org-babel-load-languages
+ '((emacs-lisp . t)
+   (julia .t)
+   (python . t)
+   (latex. t)
+   (ipython . t)
+   (jupyter . t)
+   (mermaid . t)
+   (plantuml . t)
+   (dot . t)
+   (scheme . t)))
+
+;;(org-babel-jupyter-override-src-block "python")
+
 
 (with-eval-after-load 'ox-latex
   (add-to-list 'org-latex-classes
-    '("ctexart" "\\documentclass[11pt]{ctexart}"
-       ("\\section{%s}" . "\\section*{%s}")
-       ("\\subsection{%s}" . "\\subsection*{%s}")
-       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-       ("\\paragraph{%s}" . "\\paragraph*{%s}")
-       ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
+               '("ctexart" "\\documentclass[11pt]{ctexart}"
+                 ("\\section{%s}" . "\\section*{%s}")
+                 ("\\subsection{%s}" . "\\subsection*{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
 ;;(setq org-latex-default-class "ctexart")
 ;;(setq org-latex-compiler "xelatex"))
 (setq org-element-use-cache t)
@@ -376,19 +460,18 @@
 ;;(require 'atomic-chrome)
 (atomic-chrome-start-server)
 ;;(add-transient-hook! 'after-focus-change-function (atomic-chrome-start-server))
-;;(add-transient-hook! 'focus-out-hook (atomic-chrome-start-server))
-;;(setq atomic-chrome-default-major-mode 'markdown-mode)
-;;(setq atomic-chrome-url-major-mode-alist
-;;      '(("github\\.com" . gfm-mode)
-;;        ("stackexchange\\.com" . gfm-mode)
-;;       ("stackoverflow\\.com" . gfm-mode)
-;;        ("reddit\\.com" . gfm-mode)
-;;        ("twitter\\.com" . gfm-mode)
-;;        ("youtube\\.com" . gfm-mode)
-;;        ("google\\.com" . gfm-mode)
-;;        ("newrizon\\.work" . gfm-mode)))
-;;(setq atomic-chrome-buffer-open-style 'frame)
-;;(setq atomic-chrome-server-ghost-text-port 4001)
+(setq atomic-chrome-default-major-mode 'markdown-mode)
+(setq atomic-chrome-url-major-mode-alist
+      '(("github\\.com" . gfm-mode)
+        ("stackexchange\\.com" . gfm-mode)
+        ("stackoverflow\\.com" . gfm-mode)
+        ("reddit\\.com" . gfm-mode)
+        ("twitter\\.com" . gfm-mode)
+        ("youtube\\.com" . gfm-mode)
+        ("google\\.com" . gfm-mode)
+        ("newrizon\\.work" . gfm-mode)))
+(setq atomic-chrome-buffer-open-style 'frame)
+(setq atomic-chrome-server-ghost-text-port 4001)
 
 (setq emacs-everywhere-major-mode-function #'org-mode)
 (setq emacs-everywhere-frame-name-format "emacs-everywhere")
@@ -402,16 +485,36 @@
 (use-package! company-box
   :hook (company-mode . company-box-mode))
 
-;; accept completion from copilot and fallback to company
+;;;; accept completion from copilot and fallback to company
 ;;(use-package! copilot
 ;;  :hook (prog-mode . copilot-mode)
-;;  :bind (("C-TAB" . 'copilot-accept-completion-by-word)
-;;         ("C-<tab>" . 'copilot-accept-completion-by-word)
-;;         :map copilot-completion-map
-;;         ("<tab>" . 'copilot-accept-completion)
-;;         ("TAB" . 'copilot-accept-completion)))
+;;  :bind (:map copilot-completion-map
+;;              ("<tab>" . 'copilot-accept-completion)
+;;              ("TAB" . 'copilot-accept-completion)
+;;              ("C-TAB" . 'copilot-accept-completion-by-word)
+;;              ("C-<tab>" . 'copilot-accept-completion-by-word)
+;;              ("C-n" . 'copilot-next-completion)
+;;              ("C-p" . 'copilot-previous-completion))
+;;  :config
+;;  (add-to-list 'copilot-indentation-alist '(prog-mode 2))
+;;  (add-to-list 'copilot-indentation-alist '(org-mode 2))
+;;  (add-to-list 'copilot-indentation-alist '(text-mode 2))
+;;  (add-to-list 'copilot-indentation-alist '(closure-mode 2))
+;;  (add-to-list 'copilot-indentation-alist '(emacs-lisp-mode 2)))
+;;
+;;(after! (evil copilot)
+;;  ;; Define the custom function that either accepts the completion or does the default behavior
+;;  (defun my/copilot-tab-or-default ()
+;;    (interactive)
+;;    (if (and (bound-and-true-p copilot-mode)
+;;             ;; Add any other conditions to check for active copilot suggestions if necessary
+;;             )
+;;        (copilot-accept-completion)
+;;      (evil-insert 1))) ; Default action to insert a tab. Adjust as needed.
+;;
+;;  ;; Bind the custom function to <tab> in Evil's insert state
+;;  (evil-define-key 'insert 'global (kbd "<tab>") 'my/copilot-tab-or-default))
 
-;; Reveal.js + Org mode
 (require 'powerline)
 (powerline-default-theme)
 
@@ -421,76 +524,40 @@
 ;;(setq lsp-headerline-breadcrumb-mode-hook 'flyspell-mode-off)
 (setq lsp-headerline-breadcrumb-enable-diagnostics nil)
 
-;; change font to MesloLGS NF
-;;(add-hook 'vterm-mode-hook
-;;          (lambda ()
-;;            (set (make-local-variable 'buffer-face-mode-face) '"MesloLGS NF")
-;;            (buffer-face-mode t)))
-;; (setq! doom-unicode-font (font-spec :family "MesloLGS NF" :size 11))
-
-                                        ; Add to ~/.doom.d/config.el
-;;(setq doom-font (font-spec :family "Input Mono Narrow" :size 12 :weight 'semi-light)
-;;      doom-variable-pitch-font (font-spec :family "Fira Sans") ; inherits `doom-font''s :size
-;;      doom-unicode-font (font-spec :family "MesloLGS NF" :size 12)
-;;      doom-big-font (font-spec :family "Fira Mono" :size 19))
-
-
-;;(setq doom-font (font-spec :family "Input Mono Narrow" :size 12 :weight 'semi-light)
-;;      doom-variable-pitch-font (font-spec :family "Fira Sans") ; inherits `doom-font''s :size
-;;      doom-unicode-font (font-spec :family "Input Mono Narrow" :size 12)
-;;      doom-big-font (font-spec :family "Fira Mono" :size 19))
-
-;;(setq frame-resize-pixelwise t)
-;; Drag-and-drop to `dired`
-;; (after! org-download
-;;   (setq-default org-download-image-dir "~/.org.d/roam/img"))
-
-;; https://emacs.stackexchange.com/questions/108/how-do-i-drag-and-drop-files-into-emacs
-;; (add-hook 'dired-mode-Hook 'org-download-enable)
-
-;; (setq-default org-download-method 'directory
-;;               org-download-image-org-width 300
-;;               org-download-heading-lvl 1)
 
 (after! org-download
   (setq org-download-method 'directory
-    org-download-image-dir "~/.org.d/roam/img"
-    org-download-image-org-width 300
-    org-download-heading-lvl 1))
-
-;; (setq-default org-download-method 'directory)
-;; (setq-default org-download-image-dir "~/.org.d/roam/img")
-;; (setq-default org-download-heading-lvl nil)
-;; (setq-default org-download-screenshot-method "flameshot gui")
-;; (setq-default org-download-timestamp "%Y%m%d_%H%M%S")
+        org-download-image-dir (concat (getenv "HOME") "/.org.d/mode/img")
+        org-download-image-org-width 300
+        org-download-heading-lvl 1))
 
 ;; youtube video embedding
 (defvar yt-iframe-format
   ;; You may want to change your width and height.
   (concat "<iframe width=\"440\""
-    " height=\"335\""
-    " src=\"https://www.youtube.com/embed/%s\""
-    " frameborder=\"0\""
-    " allowfullscreen>%s</iframe>"))
+          " height=\"335\""
+          " src=\"https://www.youtube.com/embed/%s\""
+          " frameborder=\"0\""
+          " allowfullscreen>%s</iframe>"))
 
 (org-add-link-type
-  "yt"
-  (lambda (handle)
-    (browse-url
-      (concat "https://www.youtube.com/embed/"
-        handle)))
-  (lambda (path desc backend)
-    (cl-case backend
-      (html (format yt-iframe-format
-              path (or desc "")))
-      (latex (format "\href{%s}{%s}"
-               path (or desc "video"))))))
+ "yt"
+ (lambda (handle)
+   (browse-url
+    (concat "https://www.youtube.com/embed/"
+            handle)))
+ (lambda (path desc backend)
+   (cl-case backend
+     (html (format yt-iframe-format
+                   path (or desc "")))
+     (latex (format "\href{%s}{%s}"
+                    path (or desc "video"))))))
 
 ;;(use-package gpt)
 ;;(add-to-list 'load-path "/home/n/.emacs.d/.local/straight/repos/gpt.el")
 ;;(require 'gpt)
 
-(setq openai-key (getenv "OPENAI_EMACS_KEY"))
+;;(setq openai-key (getenv "OPENAI_EMACS_KEY"))
 ;;(setq gpt-openai-api-key (getenv "OPENAI_EMACS_KEY"))
 ;;(setq gpt-openai-engine "text-davinci-003")
 ;;(setq gpt-openai-max-tokens 2000)
@@ -523,10 +590,9 @@
   :bind ("C-c q" . chatgpt-query))
 
 
-;;(require 'zmq)
+(require 'zmq)
 
 ;;(use-package org-ai
-;;
 ;;  :ensure t
 ;;  :commands (org-ai-mode
 ;;             org-ai-global-mode)
@@ -535,7 +601,7 @@
 ;;  (org-ai-global-mode) ; installs global keybindings on C-c M-a
 ;;  :config
 ;;  (setq org-ai-default-chat-model "gpt-4") ; if you are on the gpt-4 beta:
-;;  (setq org-ai-image-directory "~/.org.d/roam/img/org-ai-images/")
+;;  (setq org-ai-image-directory "/d/05-doc/org/roam/img/org-ai-images/")
 ;;  (setq org-ai-sd-endpoint-base "http://localhost:7861/")
 ;;  (org-ai-install-yasnippets)) ; if you are using yasnippet and want `ai` snippets
 ;;(use-package jupyter
@@ -545,175 +611,21 @@
 ;;  :init (eval-after-load 'jupyter-org-extensions ; conflicts with my helm config, I use <f2 #>
 ;;          '(unbind-key "C-c h" jupyter-org-interaction-mode-map)))
 ;;
-(setq org-ai-openai-api-token (getenv "OPENAI_ORG_AI_KEY"))
+;;(setq org-ai-openai-api-token (getenv "OPENAI_ORG_AI_KEY"))
+;;(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
+;;                         ("melpa" . "http://melpa.milkbox.net/packages/"))))
+(push (substitute-in-file-name "path-to-ztree-directory") load-path)
+(require 'ztree)
+(use-package! magit-lfs
+  :ensure t
+  :pin melpa
+  :after magit
+  :config
+  (require 'magit-lfs))
 
-;; set XeTeX mode in TeX/LaTeX
-;;(add-hook 'LaTeX-mode
-;;          (add-to-list 'TeX-command-list '("XeLaTeX" "%`xelatex%(mode)%' %t" TeX-run-TeX nil t))
-;;          (add-to-list 'TeX-command-list '("LuaTeX" "%`luatex%(mode)%' %t" TeX-run-TeX nil t))
-;;          (setq TeX-command-default "XeLaTeX"
-;;                TeX-save-query nil
-;;                TeX-show-compilation t))
-(add-hook 'LaTeX-mode-hook #'my-xelatex-mode-hook)
-(defun my-xelatex-mode-hook ()
-  (add-to-list 'TeX-command-list
-    '("XeLaTeX" "%`xelatex%(mode)%' %t" TeX-run-TeX nil t))
-  (setq TeX-command-default
-    (save-excursion
-      (save-restriction
-        (widen)
-        (goto-char (point-min))
-        (let ((re (concat "^\\s-*\\\\usepackage\\(?:\\[.*\\]\\)?"
-                    "{.*\\<\\(?:font\\|math\\)spec\\>.*}")))
-          (if (re-search-forward re 3000 t)
-            "XeLaTeX"
-            "LaTeX"))))))
-
-(add-hook 'LaTeX-mode-hook #'my-luatex-mode-hook)
-(defun my-luatex-mode-hook ()
-  (add-to-list 'TeX-command-list
-    '("LuaTeX" "%`luatex%(mode)%' %t" TeX-run-TeX nil t))
-  (setq TeX-command-default
-    (save-excursion
-      (save-restriction
-        (widen)
-        (goto-char (point-min))
-        (let ((re (concat "^\\s-*\\\\usepackage\\(?:\\[.*\\]\\)?"
-                    "{.*\\<\\(?:font\\|math\\)spec\\>.*}")))
-          (if (re-search-forward re 3000 t)
-            "LuaTeX"
-            "LaTeX"))))))
-(latex-preview-pane-enable)
-
-;;(use-package! ox-moderncv
-;;  :load-path "straight/repos/org-cv/"
-;;  :init (require 'ox-moderncv))
-;;
-;;(use-package! ox-altacv
-;;  :load-path "straight/repos/org-cv/"
-;;  :init (require 'ox-altacv))
-;;
-;;(use-package! ox-awesomecv
-;;  :load-path "straight/repos/org-cv/"
-;;  :init (require 'ox-awesomecv))
-;;
-;;(use-package! ox-hugocv
-;;  :load-path "straight/repos/org-cv/"
-;;  :init (require 'ox-hugocv))
-
-;;(setq elfeed-feeds
-;;      '(("https://rss.arxiv.org/rss/cs.AI+cs.CV+cs.GL+cs.LG+cs.MA+cs.NE+cs.RO+cs.SC+eess.AS+eess.IV+eess.SY" arx ai)
-;;        ("https://rss.arxiv.org/rss/cs.AR+cs.CC+cs.CL+cs.DB+cs.DC+cs.DS+cs.PL+cs.SE+cs.SY" arx sys)
-;;        ("https://rss.arxiv.org/rss/cs" arx cs)
-;;        ("https://medium.com/tag/ai" medium ai)
-;;        ("https://feeds.maketecheasier.com/MakeTechEasier" tech news)
-;;        ("https://solar.lowtechmagazine.com/feeds/all-en.atom.xml" tech)
-;;        ("https://old.reddit.com/r/f1technical.rss" tech f1)))
-;;(setq reftex-default-bibliography "~/.org.d/bib/references.bib")
-
-(setq rmh-elfeed-org-files (list "~/.org.d/elfeed/feeds.org"))
-;;(elfeed-org)
-;;(elfeed-goodies/setup)
-
-;;(use-package! elfeed-score
-;;  :after elfeed
-;;  :config
-;;  (elfeed-score-load-score-file "~/.config/doom/elfeed.score") ; See the elfeed-score documentation for the score file syntax
-;;  (setq elfeed-score-serde-score-file "~/.config.d/doom/elfeed.serde.score")
-;;  (elfeed-score-enable)
-;;  (define-key elfeed-search-mode-map "=" elfeed-score-map))
-
-;;(clrhash elfeed-search-filter)
-;;(add-hook 'elfeed-new-entry-hook
-;;          (elfeed-make-tagger :feed-url "medium\\.com"
-;;                              :before "3 months ago"
-;;                              :add 'medium))
-;;(defface elfeed-face-tag-ai
-;;  '((t :foreground "#f00"))
-;;  "This is a custom font face for the F1 tag in Elfeed.")
-;;(push '(ai elfeed-face-tag-ai)
-;;      elfeed-search-face-alist)
-
-;;(setq! bibtex-completion-bibliography '("~/.org.d/bib/references.bib"))
-;;(setq biblio-download-directory '("~/Readings/02-papers/bib-lib"))
-
-;;(use-package! citar
-;;  :no-require
-;;  :custom
-
-;;(setq! citar-bibliography '("~/.org.d/bib/global.bib"
-;;                            "~/.org.d/bib/download.bib")
-;;       citar-library-paths '("~/Readings/02-papers/bib-lib")
-;;       citar-notes-paths '("~/.org.d/bib/notes/"))
-
-;;(use-package! citar
-;;  :custom
-;;  (citar-bibliography '("~/.org.d/bib/global.bib"))
-;;  :hook
-;;  (LaTeX-mode . citar-capf-setup)
-;;  (org-mode . citar-capf-setup))
-
-;;org-cite-insert-processor 'citar)
-;;org-cite-follow-processor 'citar)
-;;org-cite-activate-processor 'citar)
-;;(org-cite-global-bibliography '("~/.org.d/bib/references.bib"))
-;;citar-bibliography org-cite-global-bibliography)
-;; optional: org-cite-insert is also bound to C-c C-x C-@
-;;:hook
-;;(LaTeX-mode . citar-capf-setup)
-;;(org-mode . citar-capf-setup))
-;;  :bind
-;;  (:map org-mode-map :package org ("C-c b" . #'org-cite-insert)))
-
-(use-package! citar-embark
-  :after citar embark
-  :no-require
-  :config (citar-embark-mode))
-
-(setq! citar-templates
-  '((main . "${author editor:30%sn}     ${date year issued:4}     ${title:48}")
-     (suffix . "          ${=key= id:15}    ${=type=:12}    ${tags keywords:*}")
-     (preview . "${author editor:%etal} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
-     (note . "Notes on ${author editor:%etal}, ${title"))
-  )
-
-
-(use-package ai-code
+(use-package! ai-code
   :config
   (ai-code-set-backend 'codex)
   ;; Optional: use a narrower transient menu on smaller frames
   ;; (setq ai-code-menu-layout 'two-columns)
   (global-set-key (kbd "C-c a") #'ai-code-menu))
-
-(add-hook 'magit-diff-mode-hook 'visual-line-mode)
-
-
-;;(use-package ai-code
-;;  ;; :straight (:host github :repo "tninja/ai-code-interface.el") ;; if you want to use straight to install, no need to have MELPA setting above
-;;  :config
-;;  ;; use codex as backend, other options are 'claude-code, 'gemini, 'github-copilot-cli, 'opencode, 'kilo, 'grok, 'cursor, 'kiro, 'codebuddy, 'aider, 'eca, 'agent-shell, 'claude-code-ide, 'claude-code-el
-;;  (ai-code-set-backend 'codex)
-;;  ;; Optional: default menu stays unchanged; use a narrower 2-column layout on smaller frames
-;;  ;; (setq ai-code-menu-layout 'two-columns)
-;;  ;; Enable global keybinding for the main menu
-;;  (global-set-key (kbd "C-c a") #'ai-code-menu)
-;;  ;; Optional: Use eat if you prefer, by default it is vterm
-;;  ;; (setq ai-code-backends-infra-terminal-backend 'eat) ;; config for native CLI backends. for external backends such as agent-shell, claude-code-ide.el and claude-code.el, please check their own config
-;;  ;; Optional: Try ghostel as an experimental backend infra
-;;  ;; (setq ai-code-backends-infra-terminal-backend 'ghostel)
-;;  ;; Optional: Disable @ file completion in comments and AI sessions
-;;  ;; (ai-code-prompt-filepath-completion-mode -1)
-;;  ;; Optional: Ask AI to run test after code changes, for a tighter build-test loop
-;;  (setq ai-code-auto-test-type 'ask-me)
-;;  ;; Optional: Offer numbered next steps for discussion prompts at send time
-;;  ;; Customize `ai-code-discussion-auto-follow-up-enabled` to non-nil
-;;  ;; or set it directly like this:
-;;  ;; (setq ai-code-discussion-auto-follow-up-enabled t)
-;;  ;; Optional: In AI session buffers, SPC in Evil normal state triggers the prompt-enter UI
-;;  (with-eval-after-load 'evil (ai-code-backends-infra-evil-setup))
-;;  ;; Optional: Turn on auto-revert buffer, so that the AI code change automatically appears in the buffer
-;;  (global-auto-revert-mode 1)
-;;  (setq auto-revert-interval 1) ;; set to 1 second for faster update
-;;  ;; Optional: Set up Magit integration for AI commands in Magit popups
-;;  (with-eval-after-load 'magit
-;;    (ai-code-magit-setup-transients)))
